@@ -1,0 +1,40 @@
+specVersion: v0.1.0
+package:
+  name: 'solana_clickhouse'
+  version: v0.1.0
+
+# protobuf:
+#   files:
+#     - clickhouse.proto
+#   importPaths:
+#     - ./proto
+
+imports:
+  sql: https://github.com/streamingfast/substreams-sink-sql/releases/download/protodefs-v1.0.3/substreams-sink-sql-protodefs-v1.0.3.spkg
+  blockmeta: https://github.com/streamingfast/substreams-eth-block-meta/releases/download/v0.5.1/substreams-eth-block-meta-v0.5.1.spkg
+
+binaries:
+  default:
+    type: wasm/rust-v1
+    file: target/wasm32-unknown-unknown/release/solana_clickhouse.wasm
+
+modules:
+  - name: db_out
+    kind: map
+    inputs:
+      - source: sf.solana.type.v1.Block
+    output:
+      type: proto:sf.substreams.sink.database.v1.DatabaseChanges
+
+network: solana
+
+sink:
+  module: db_out
+  type: sf.substreams.sink.sql.v1.Service
+  config:
+    schema: "./schema.sql"
+    engine: clickhouse
+    postgraphile_frontend:
+      enabled: false
+    pgweb_frontend:
+      enabled: false
