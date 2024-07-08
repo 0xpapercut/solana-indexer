@@ -24,11 +24,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6b4930d2cb77ce62f89ee5d5289b4ac049559b1c45539271f5ed4fdc7db34545"
 
 [[package]]
-name = "arrform"
-version = "0.1.1"
-source = "git+https://github.com/raydium-io/arrform#fdbb0cfe18eadbff99cc8cd63f1b5a43df70e665"
-
-[[package]]
 name = "autocfg"
 version = "1.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -289,17 +284,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "num-derive"
-version = "0.4.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ed3955f1a9c7c0c15e092f9c887db08b1fc683305fdf6eb6684f22555355e202"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.68",
-]
-
-[[package]]
 name = "num-integer"
 version = "0.1.46"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -503,24 +487,14 @@ dependencies = [
 name = "raydium-substream"
 version = "1.0.0"
 dependencies = [
- "arrayref",
- "arrform",
- "base64",
- "bincode",
  "bs58 0.5.1",
- "bytemuck",
- "num-derive",
  "prost",
- "regex",
- "safe-transmute",
- "serde",
- "spl-token-substream",
+ "spl-token-substream 0.1.0 (git+https://github.com/0xpapercut/spl-token-substream?branch=main)",
  "substreams",
  "substreams-solana",
- "substreams-solana-program-instructions",
  "substreams-solana-raydium-amm",
- "substreams-solana-structured-instructions",
- "substreams-solana-utils",
+ "substreams-solana-structured-instructions 0.1.0 (git+https://github.com/0xpapercut/substreams-solana-structured-instructions?branch=main)",
+ "substreams-solana-utils 0.1.0 (git+https://github.com/0xpapercut/substreams-solana-utils?branch=main)",
 ]
 
 [[package]]
@@ -611,7 +585,7 @@ dependencies = [
  "prost",
  "prost-types",
  "raydium-substream",
- "spl-token-substream",
+ "spl-token-substream 0.1.0",
  "substreams",
  "substreams-database-change",
  "substreams-solana",
@@ -626,9 +600,24 @@ dependencies = [
  "substreams",
  "substreams-solana",
  "substreams-solana-program-instructions",
- "substreams-solana-spl-token",
- "substreams-solana-structured-instructions",
- "substreams-solana-utils",
+ "substreams-solana-spl-token 0.1.0",
+ "substreams-solana-structured-instructions 0.1.0",
+ "substreams-solana-utils 0.1.0",
+]
+
+[[package]]
+name = "spl-token-substream"
+version = "0.1.0"
+source = "git+https://github.com/0xpapercut/spl-token-substream?branch=main#dcd1473c357580e2da7bad9e31630f41491e1c81"
+dependencies = [
+ "bs58 0.5.1",
+ "prost",
+ "substreams",
+ "substreams-solana",
+ "substreams-solana-program-instructions",
+ "substreams-solana-spl-token 0.1.0 (git+https://github.com/0xpapercut/substreams-solana-spl-token?branch=main)",
+ "substreams-solana-structured-instructions 0.1.0 (git+https://github.com/0xpapercut/substreams-solana-structured-instructions?branch=main)",
+ "substreams-solana-utils 0.1.0 (git+https://github.com/0xpapercut/substreams-solana-utils?branch=main)",
 ]
 
 [[package]]
@@ -657,8 +646,7 @@ dependencies = [
 [[package]]
 name = "substreams-database-change"
 version = "1.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ed32ca6fc7fa4b7a684d3abd5bb0545aadd2df82402e7336443cdbb6f8b350c3"
+source = "git+https://github.com/streamingfast/substreams-sink-database-changes?branch=develop#6199b8faaa0a98c321a7ed8881bc542ba3551ec9"
 dependencies = [
  "prost",
  "prost-types",
@@ -741,8 +729,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "substreams-solana-spl-token"
+version = "0.1.0"
+source = "git+https://github.com/0xpapercut/substreams-solana-spl-token?branch=main#4c879aa7505b5b7aa177f8a5ba5821baabaf0c82"
+dependencies = [
+ "substreams-solana-program-instructions",
+]
+
+[[package]]
 name = "substreams-solana-structured-instructions"
 version = "0.1.0"
+dependencies = [
+ "substreams",
+ "substreams-solana",
+]
+
+[[package]]
+name = "substreams-solana-structured-instructions"
+version = "0.1.0"
+source = "git+https://github.com/0xpapercut/substreams-solana-structured-instructions?branch=main#620ae0302572c20d2c77ea1c04a40c40c52722fb"
 dependencies = [
  "substreams",
  "substreams-solana",
@@ -755,8 +760,20 @@ dependencies = [
  "bs58 0.5.1",
  "substreams-solana",
  "substreams-solana-program-instructions",
- "substreams-solana-spl-token",
- "substreams-solana-structured-instructions",
+ "substreams-solana-spl-token 0.1.0 (git+https://github.com/0xpapercut/substreams-solana-spl-token?branch=main)",
+ "substreams-solana-structured-instructions 0.1.0 (git+https://github.com/0xpapercut/substreams-solana-structured-instructions?branch=main)",
+]
+
+[[package]]
+name = "substreams-solana-utils"
+version = "0.1.0"
+source = "git+https://github.com/0xpapercut/substreams-solana-utils?branch=main#4f2f92ff327165d3837c00ebcf126a6af3b3ebd1"
+dependencies = [
+ "bs58 0.5.1",
+ "substreams-solana",
+ "substreams-solana-program-instructions",
+ "substreams-solana-spl-token 0.1.0 (git+https://github.com/0xpapercut/substreams-solana-spl-token?branch=main)",
+ "substreams-solana-structured-instructions 0.1.0 (git+https://github.com/0xpapercut/substreams-solana-structured-instructions?branch=main)",
 ]
 
 [[package]]

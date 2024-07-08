@@ -9,8 +9,8 @@ crate-type = ["cdylib"]
 [dependencies]
 substreams = "0.5.0"
 substreams-solana = { git = "https://github.com/streamingfast/substreams-solana", branch = "master" }
+substreams-database-change = { git = "https://github.com/streamingfast/substreams-sink-database-changes", branch = "develop" }
 prost = "0.11"
-substreams-database-change = "1.0.0"
 anyhow = "1"
 prost-types = "0.11"
 chrono = { version = "0.4", features = [ "std" ], default-features = false }
