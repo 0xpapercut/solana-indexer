@@ -87,8 +87,9 @@ fn spl_token_db_out(block: &Block) -> Result<DatabaseChanges, substreams::errors
                                               .set("mint", &initialize_mint.mint)
                                               .set("decimals", initialize_mint.decimals)
                                               .set("mint_authority", &initialize_mint.mint_authority);
-                    if let Some(freeze_authority) = &initialize_mint.freeze_authority {
-                        row.set("freeze_authority", freeze_authority);
+                    match &initialize_mint.freeze_authority {
+                        Some(freeze_authority) => { row.set("freeze_authority", freeze_authority); }
+                        None => { row.set("freeze_authority", ""); }
                     }
                 },
                 Some(spl_token_event::Event::InitializeAccount(initialize_account)) => {
@@ -136,8 +137,9 @@ fn spl_token_db_out(block: &Block) -> Result<DatabaseChanges, substreams::errors
                                     .set("slot", block.slot)
                                     .set("mint", &set_authority.mint)
                                     .set("authority_type", AuthorityType::from_i32(set_authority.authority_type).unwrap().as_str_name());
-                    if let Some(new_authority) = &set_authority.new_authority {
-                        row.set("new_authority", new_authority);
+                    match &set_authority.new_authority {
+                        Some(new_authority) => { row.set("new_authority", new_authority); }
+                        None => { row.set("new_authority", ""); }
                     }
                 },
                 Some(spl_token_event::Event::MintTo(mint_to)) => {
