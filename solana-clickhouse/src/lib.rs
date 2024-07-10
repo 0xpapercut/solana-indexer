@@ -89,7 +89,7 @@ fn spl_token_db_out(block: &Block) -> Result<DatabaseChanges, substreams::errors
                                               .set("mint_authority", &initialize_mint.mint_authority);
                     match &initialize_mint.freeze_authority {
                         Some(freeze_authority) => { row.set("freeze_authority", freeze_authority); }
-                        None => { row.set("freeze_authority", ""); }
+                        None => { row.set("freeze_authority", "null".to_string()); }
                     }
                 },
                 Some(spl_token_event::Event::InitializeAccount(initialize_account)) => {
@@ -139,7 +139,7 @@ fn spl_token_db_out(block: &Block) -> Result<DatabaseChanges, substreams::errors
                                     .set("authority_type", AuthorityType::from_i32(set_authority.authority_type).unwrap().as_str_name());
                     match &set_authority.new_authority {
                         Some(new_authority) => { row.set("new_authority", new_authority); }
-                        None => { row.set("new_authority", ""); }
+                        None => { row.set("new_authority", "null".to_string()); }
                     }
                 },
                 Some(spl_token_event::Event::MintTo(mint_to)) => {
