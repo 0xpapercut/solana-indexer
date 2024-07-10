@@ -26,7 +26,7 @@ clean_db:
 	# clickhouse-client --query "$(cat $(SCHEMA_FILE))"
 
 .PHONY: sink
-sink:
+sink: build
 	substreams-sink-sql run $(DSN) $(MANIFEST) $(START): --undo-buffer-size $(UNDO_BUFFER_SIZE)
 
 .PHONY: protogen
