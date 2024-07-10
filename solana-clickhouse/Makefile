@@ -1,6 +1,4 @@
-START ?= 275355786
 ENDPOINT ?= mainnet.sol.streamingfast.io:443
-UNDO_BUFFER_SIZE = 30
 
 SCHEMA_FILE = "./schema.sql"
 MANIFEST = "./substreams.yaml"
