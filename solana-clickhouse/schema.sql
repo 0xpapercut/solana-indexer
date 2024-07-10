@@ -119,6 +119,23 @@ CREATE TABLE spl_token_initialize_mint_events
     FOREIGN KEY (signature) REFERENCES transactions(signature),
     FOREIGN KEY (mint) REFERENCES addresses(address),
     FOREIGN KEY (mint_authority) REFERENCES addresses(address),
+    FOREIGN KEY (freeze_authority) REFERENCES addresses(address),
+)
+ENGINE = MergeTree
+PRIMARY KEY (signature, event_id);
+
+CREATE TABLE spl_token_initialize_account_events
+(
+    signature VARCHAR(88) CODEC(LZ4),
+    event_id UInt64,
+    slot UInt64,
+    account_address VARCHAR(44) CODEC(LZ4),
+    account_owner VARCHAR(44) CODEC(LZ4),
+    mint VARCHAR(44) CODEC(LZ4),
+    FOREIGN KEY (signature) REFERENCES transactions(signature),
+    FOREIGN KEY (account_address) REFERENCES addresses(address),
+    FOREIGN KEY (account_owner) REFERENCES addresses(address),
+    FOREIGN KEY (mint) REFERENCES addresses(address),
 )
 ENGINE = MergeTree
 PRIMARY KEY (signature, event_id);
@@ -127,7 +144,10 @@ CREATE TABLE spl_token_initialize_multisig_events
 (
     signature VARCHAR(88) CODEC(LZ4),
     event_id UInt64,
-    -- TODO
+    multisig VARCHAR(44) CODEC(LZ4),
+    signers Array(VARCHAR(44)) CODEC(LZ4),
+    FOREIGN KEY (signature) REFERENCES transactions(signature),
+    FOREIGN KEY (multisig) REFERENCES addresses(address),
 )
 ENGINE = MergeTree
 PRIMARY KEY (signature, event_id);
@@ -143,12 +163,14 @@ CREATE TABLE spl_token_transfer_events
     destination_owner VARCHAR(44) CODEC(LZ4),
     mint VARCHAR(44) CODEC(LZ4),
     amount UInt64,
+    authority VARCHAR(44) CODEC(LZ4),
     FOREIGN KEY (signature) REFERENCES transactions(signature),
     FOREIGN KEY (source_address) REFERENCES addresses(address),
     FOREIGN KEY (source_owner) REFERENCES addresses(address),
     FOREIGN KEY (destination_address) REFERENCES addresses(address),
     FOREIGN KEY (destination_owner) REFERENCES addresses(address),
     FOREIGN KEY (mint) REFERENCES addresses(address),
+    FOREIGN KEY (authority) REFERENCES addresses(address),
 )
 ENGINE = MergeTree
 PRIMARY KEY (signature, event_id);
@@ -160,7 +182,7 @@ CREATE TABLE spl_token_approve_events
     slot UInt64,
     source_address VARCHAR(44) CODEC(LZ4),
     source_owner VARCHAR(44) CODEC(LZ4),
-    source_mint VARCHAR(44) CODEC(LZ4),
+    mint VARCHAR(44) CODEC(LZ4),
     delegate VARCHAR(44) CODEC(LZ4),
     amount UInt64,
     FOREIGN KEY (signature) REFERENCES transactions(signature),
@@ -179,7 +201,7 @@ CREATE TABLE spl_token_revoke_events
     slot UInt64,
     source_address VARCHAR(44) CODEC(LZ4),
     source_owner VARCHAR(44) CODEC(LZ4),
-    source_mint VARCHAR(44) CODEC(LZ4),
+    mint VARCHAR(44) CODEC(LZ4),
     FOREIGN KEY (signature) REFERENCES transactions(signature),
     FOREIGN KEY (source_address) REFERENCES addresses(address),
     FOREIGN KEY (source_owner) REFERENCES addresses(address),
@@ -211,11 +233,13 @@ CREATE TABLE spl_token_mint_to_events
     destination_address VARCHAR(44) CODEC(LZ4),
     destination_owner VARCHAR(44) CODEC(LZ4),
     mint VARCHAR(44) CODEC(LZ4),
+    mint_authority VARCHAR(44) CODEC(LZ4),
     amount UInt64,
     FOREIGN KEY (signature) REFERENCES transactions(signature),
     FOREIGN KEY (destination_address) REFERENCES addresses(address),
     FOREIGN KEY (destination_owner) REFERENCES addresses(address),
     FOREIGN KEY (mint) REFERENCES addresses(address),
+    FOREIGN KEY (mint_authority) REFERENCES addresses(address),
 )
 ENGINE = MergeTree
 PRIMARY KEY (signature, event_id);
@@ -228,10 +252,13 @@ CREATE TABLE spl_token_burn_events
     source_address VARCHAR(44) CODEC(LZ4),
     source_owner VARCHAR(44) CODEC(LZ4),
     mint VARCHAR(44) CODEC(LZ4),
+    authority VARCHAR(44) CODEC(LZ4),
+    amount UInt64,
     FOREIGN KEY (signature) REFERENCES transactions(signature),
     FOREIGN KEY (source_address) REFERENCES addresses(address),
     FOREIGN KEY (source_owner) REFERENCES addresses(address),
     FOREIGN KEY (mint) REFERENCES addresses(address),
+    FOREIGN KEY (authority) REFERENCES addresses(address),
 )
 ENGINE = MergeTree
 PRIMARY KEY (signature, event_id);
@@ -248,6 +275,7 @@ CREATE TABLE spl_token_close_account_events
     FOREIGN KEY (signature) REFERENCES transactions(signature),
     FOREIGN KEY (source_address) REFERENCES addresses(address),
     FOREIGN KEY (source_owner) REFERENCES addresses(address),
+    FOREIGN KEY (destination) REFERENCES addresses(address),
     FOREIGN KEY (mint) REFERENCES addresses(address),
 )
 ENGINE = MergeTree
@@ -261,10 +289,12 @@ CREATE TABLE spl_token_freeze_account_events
     source_address VARCHAR(44) CODEC(LZ4),
     source_owner VARCHAR(44) CODEC(LZ4),
     mint VARCHAR(44) CODEC(LZ4),
+    freeze_authority VARCHAR(44) CODEC(LZ4),
     FOREIGN KEY (signature) REFERENCES transactions(signature),
     FOREIGN KEY (source_address) REFERENCES addresses(address),
     FOREIGN KEY (source_owner) REFERENCES addresses(address),
     FOREIGN KEY (mint) REFERENCES addresses(address),
+    FOREIGN KEY (freeze_authority) REFERENCES addresses(address),
 )
 ENGINE = MergeTree
 PRIMARY KEY (signature, event_id);
@@ -277,10 +307,12 @@ CREATE TABLE spl_token_thaw_account_events
     source_address VARCHAR(44) CODEC(LZ4),
     source_owner VARCHAR(44) CODEC(LZ4),
     mint VARCHAR(44) CODEC(LZ4),
+    freeze_authority VARCHAR(44) CODEC(LZ4),
     FOREIGN KEY (signature) REFERENCES transactions(signature),
     FOREIGN KEY (source_address) REFERENCES addresses(address),
     FOREIGN KEY (source_owner) REFERENCES addresses(address),
     FOREIGN KEY (mint) REFERENCES addresses(address),
+    FOREIGN KEY (freeze_authority) REFERENCES addresses(address),
 )
 ENGINE = MergeTree
 PRIMARY KEY (signature, event_id);
@@ -290,12 +322,12 @@ CREATE TABLE spl_token_initialize_immutable_owner_event
     signature VARCHAR(88) CODEC(LZ4),
     event_id UInt64,
     slot UInt64,
-    source_address VARCHAR(44) CODEC(LZ4),
-    source_owner VARCHAR(44) CODEC(LZ4),
+    account_address VARCHAR(44) CODEC(LZ4),
+    account_owner VARCHAR(44) CODEC(LZ4),
     mint VARCHAR(44) CODEC(LZ4),
     FOREIGN KEY (signature) REFERENCES transactions(signature),
-    FOREIGN KEY (source_address) REFERENCES addresses(address),
-    FOREIGN KEY (source_owner) REFERENCES addresses(address),
+    FOREIGN KEY (account_address) REFERENCES addresses(address),
+    FOREIGN KEY (account_owner) REFERENCES addresses(address),
     FOREIGN KEY (mint) REFERENCES addresses(address),
 )
 ENGINE = MergeTree
