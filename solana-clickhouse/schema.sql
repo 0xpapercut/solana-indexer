@@ -43,9 +43,9 @@ CREATE TABLE raydium_initialize_events
     slot UInt64,
     amm VARCHAR(44) CODEC(LZ4),
     user VARCHAR(44) CODEC(LZ4),
-    pc_amount UInt64,
-    coin_amount UInt64,
-    lp_amount UInt64,
+    pc_init_amount UInt64,
+    coin_init_amount UInt64,
+    lp_init_amount UInt64,
     pc_mint VARCHAR(44),
     coin_mint VARCHAR(44),
     lp_mint VARCHAR(44),
@@ -188,7 +188,7 @@ CREATE TABLE spl_token_approve_events
     FOREIGN KEY (signature) REFERENCES transactions(signature),
     FOREIGN KEY (source_address) REFERENCES addresses(address),
     FOREIGN KEY (source_owner) REFERENCES addresses(address),
-    FOREIGN KEY (source_mint) REFERENCES addresses(address),
+    FOREIGN KEY (mint) REFERENCES addresses(address),
     FOREIGN KEY (delegate) REFERENCES addresses(address),
 )
 ENGINE = MergeTree
@@ -205,7 +205,7 @@ CREATE TABLE spl_token_revoke_events
     FOREIGN KEY (signature) REFERENCES transactions(signature),
     FOREIGN KEY (source_address) REFERENCES addresses(address),
     FOREIGN KEY (source_owner) REFERENCES addresses(address),
-    FOREIGN KEY (source_mint) REFERENCES addresses(address),
+    FOREIGN KEY (mint) REFERENCES addresses(address),
 )
 ENGINE = MergeTree
 PRIMARY KEY (signature, event_id);
@@ -317,7 +317,7 @@ CREATE TABLE spl_token_thaw_account_events
 ENGINE = MergeTree
 PRIMARY KEY (signature, event_id);
 
-CREATE TABLE spl_token_initialize_immutable_owner_event
+CREATE TABLE spl_token_initialize_immutable_owner_events
 (
     signature VARCHAR(88) CODEC(LZ4),
     event_id UInt64,
