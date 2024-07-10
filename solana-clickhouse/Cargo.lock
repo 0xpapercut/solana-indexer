@@ -485,16 +485,16 @@ dependencies = [
 
 [[package]]
 name = "raydium-substream"
-version = "1.0.0"
+version = "0.1.0"
 dependencies = [
  "bs58 0.5.1",
  "prost",
- "spl-token-substream 0.1.0 (git+https://github.com/0xpapercut/spl-token-substream?branch=main)",
+ "spl-token-substream",
  "substreams",
  "substreams-solana",
  "substreams-solana-raydium-amm",
- "substreams-solana-structured-instructions 0.1.0 (git+https://github.com/0xpapercut/substreams-solana-structured-instructions?branch=main)",
- "substreams-solana-utils 0.1.0 (git+https://github.com/0xpapercut/substreams-solana-utils?branch=main)",
+ "substreams-solana-structured-instructions 0.1.0",
+ "substreams-solana-utils",
 ]
 
 [[package]]
@@ -585,7 +585,7 @@ dependencies = [
  "prost",
  "prost-types",
  "raydium-substream",
- "spl-token-substream 0.1.0",
+ "spl-token-substream",
  "substreams",
  "substreams-database-change",
  "substreams-solana",
@@ -602,22 +602,7 @@ dependencies = [
  "substreams-solana-program-instructions",
  "substreams-solana-spl-token 0.1.0",
  "substreams-solana-structured-instructions 0.1.0",
- "substreams-solana-utils 0.1.0",
-]
-
-[[package]]
-name = "spl-token-substream"
-version = "0.1.0"
-source = "git+https://github.com/0xpapercut/spl-token-substream?branch=main#dcd1473c357580e2da7bad9e31630f41491e1c81"
-dependencies = [
- "bs58 0.5.1",
- "prost",
- "substreams",
- "substreams-solana",
- "substreams-solana-program-instructions",
- "substreams-solana-spl-token 0.1.0 (git+https://github.com/0xpapercut/substreams-solana-spl-token?branch=main)",
- "substreams-solana-structured-instructions 0.1.0 (git+https://github.com/0xpapercut/substreams-solana-structured-instructions?branch=main)",
- "substreams-solana-utils 0.1.0 (git+https://github.com/0xpapercut/substreams-solana-utils?branch=main)",
+ "substreams-solana-utils",
 ]
 
 [[package]]
@@ -756,18 +741,6 @@ dependencies = [
 [[package]]
 name = "substreams-solana-utils"
 version = "0.1.0"
-dependencies = [
- "bs58 0.5.1",
- "substreams-solana",
- "substreams-solana-program-instructions",
- "substreams-solana-spl-token 0.1.0 (git+https://github.com/0xpapercut/substreams-solana-spl-token?branch=main)",
- "substreams-solana-structured-instructions 0.1.0 (git+https://github.com/0xpapercut/substreams-solana-structured-instructions?branch=main)",
-]
-
-[[package]]
-name = "substreams-solana-utils"
-version = "0.1.0"
-source = "git+https://github.com/0xpapercut/substreams-solana-utils?branch=main#4f2f92ff327165d3837c00ebcf126a6af3b3ebd1"
 dependencies = [
  "bs58 0.5.1",
  "substreams-solana",
