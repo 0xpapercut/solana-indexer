@@ -86,6 +86,7 @@ CREATE TABLE raydium_withdraw_events
     lp_amount UInt64,
     pc_mint VARCHAR(44),
     coin_mint VARCHAR(44),
+    lp_mint VARCHAR(44),
 )
 ENGINE = MergeTree
 PRIMARY KEY (signature, instruction_index);
