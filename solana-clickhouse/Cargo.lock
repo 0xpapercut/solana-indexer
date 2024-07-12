@@ -581,6 +581,7 @@ name = "solana-clickhouse"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "bs58 0.5.1",
  "chrono",
  "prost",
  "prost-types",
