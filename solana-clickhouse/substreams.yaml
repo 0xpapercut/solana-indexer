@@ -13,7 +13,7 @@ binaries:
     file: target/wasm32-unknown-unknown/release/solana_clickhouse.wasm
 
 modules:
-  - name: db_out
+  - name: solana_database_changes
     kind: map
     inputs:
       - source: sf.solana.type.v1.Block
@@ -23,7 +23,7 @@ modules:
 network: solana
 
 sink:
-  module: db_out
+  module: solana_database_changes
   type: sf.substreams.sink.sql.v1.Service
   config:
     schema: "./schema.sql"
