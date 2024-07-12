@@ -25,9 +25,9 @@ fn solana_database_changes(block: Block) -> Result<DatabaseChanges, substreams::
 fn blocks_table_changes(block: &Block) -> Result<Vec<TableChange>, substreams::errors::Error> {
     let mut tables = Tables::new();
     tables.create_row("blocks", block.slot.to_string())
-          .set("height", block.block_height.as_ref().unwrap().block_height)
-          .set("hash", &block.blockhash)
-          .set("time", block.block_time.as_ref().unwrap().timestamp);
+        .set("height", block.block_height.as_ref().unwrap().block_height)
+        .set("hash", &block.blockhash)
+        .set("time", block.block_time.as_ref().unwrap().timestamp);
     Ok(tables.to_database_changes().table_changes)
 }
 
@@ -36,8 +36,8 @@ fn transactions_table_changes(block: &Block) -> Result<Vec<TableChange>, substre
     for (i, transaction) in block.transactions.iter().enumerate() {
         let signature = bs58::encode(&transaction.transaction.as_ref().unwrap().signatures[0]).into_string();
         tables.create_row("transactions", signature)
-              .set("transaction_index", i as u32)
-              .set("slot", block.slot);
+            .set("transaction_index", i as u32)
+            .set("slot", block.slot);
     }
     Ok(tables.to_database_changes().table_changes)
 }
