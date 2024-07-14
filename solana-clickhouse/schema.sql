@@ -48,9 +48,9 @@ CREATE TABLE raydium_initialize_events
     pc_init_amount UInt64,
     coin_init_amount UInt64,
     lp_init_amount UInt64,
-    pc_mint VARCHAR(44),
-    coin_mint VARCHAR(44),
-    lp_mint VARCHAR(44),
+    pc_mint VARCHAR(44) CODEC(LZ4),
+    coin_mint VARCHAR(44) CODEC(LZ4),
+    lp_mint VARCHAR(44) CODEC(LZ4),
 )
 ENGINE = MergeTree
 PRIMARY KEY (signature, instruction_index);
@@ -66,9 +66,9 @@ CREATE TABLE raydium_deposit_events
     pc_amount UInt64,
     coin_amount UInt64,
     lp_amount UInt64,
-    pc_mint VARCHAR(44),
-    coin_mint VARCHAR(44),
-    lp_mint VARCHAR(44),
+    pc_mint VARCHAR(44) CODEC(LZ4),
+    coin_mint VARCHAR(44) CODEC(LZ4),
+    lp_mint VARCHAR(44) CODEC(LZ4),
 )
 ENGINE = MergeTree
 PRIMARY KEY (signature, instruction_index);
@@ -84,9 +84,9 @@ CREATE TABLE raydium_withdraw_events
     pc_amount UInt64,
     coin_amount UInt64,
     lp_amount UInt64,
-    pc_mint VARCHAR(44),
-    coin_mint VARCHAR(44),
-    lp_mint VARCHAR(44),
+    pc_mint VARCHAR(44) CODEC(LZ4),
+    coin_mint VARCHAR(44) CODEC(LZ4),
+    lp_mint VARCHAR(44) CODEC(LZ4),
 )
 ENGINE = MergeTree
 PRIMARY KEY (signature, instruction_index);
