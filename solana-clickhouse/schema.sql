@@ -125,6 +125,7 @@ CREATE TABLE spl_token_initialize_multisig_events
     signature VARCHAR(88) CODEC(LZ4),
     instruction_index UInt32,
     transaction_index UInt32,
+    slot UInt64,
     multisig VARCHAR(44) CODEC(LZ4),
     signers Array(VARCHAR(44)) CODEC(LZ4),
 )
