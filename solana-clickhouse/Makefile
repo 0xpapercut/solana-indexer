@@ -1,4 +1,5 @@
 ENDPOINT ?= mainnet.sol.streamingfast.io:443
+UNDO_BUFFER_SIZE ?= 60
 
 SCHEMA_FILE = "./schema.sql"
 MANIFEST = "./substreams.yaml"
@@ -10,9 +11,11 @@ build:
 .PHONY: stream
 stream: build
 	if [ -n "$(STOP)" ]; then \
-		substreams run -e $(ENDPOINT) substreams.yaml db_out -s $(START) -t $(STOP); \
+		substreams run -e $(ENDPOINT) substreams.yaml solana_database_changes -s $(START) -t $(STOP); \
+	elif [ -n "$(START)" ]; then \
+		substreams run -e $(ENDPOINT) substreams.yaml solana_database_changes -s $(START); \
 	else \
-		substreams run -e $(ENDPOINT) substreams.yaml db_out -s $(START); \
+	substreams run -e $(ENDPOINT) substreams.yaml solana_database_changes; \
 	fi
 
 .PHONY: setup_db
@@ -27,7 +30,7 @@ clean_db:
 
 .PHONY: sink
 sink: build
-	substreams-sink-sql run $(DSN) $(MANIFEST) $(START): --undo-buffer-size $(UNDO_BUFFER_SIZE)
+	substreams-sink-sql run $(DSN) $(MANIFEST) $(START): --undo-buffer-size $(UNDO_BUFFER_SIZE) --on-module-hash-mistmatch=warn
 
 .PHONY: protogen
 protogen:
