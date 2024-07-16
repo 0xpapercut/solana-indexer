@@ -128,6 +128,7 @@ CREATE TABLE spl_token_initialize_multisig_events
     slot UInt64,
     multisig VARCHAR(44) CODEC(LZ4),
     signers Array(VARCHAR(44)) CODEC(LZ4),
+    m UInt32,
 )
 ENGINE = MergeTree
 PRIMARY KEY (signature, instruction_index);

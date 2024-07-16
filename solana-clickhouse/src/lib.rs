@@ -134,7 +134,8 @@ fn spl_token_tables_changes(block: &Block) -> Result<Vec<TableChange>, substream
                         .set("transaction_index", transaction.transaction_index)
                         .set("slot", block.slot)
                         .set("multisig", &initialize_multisig.multisig)
-                        .set_clickhouse_array("signers", initialize_multisig.signers.clone());
+                        .set_clickhouse_array("signers", initialize_multisig.signers.clone())
+                        .set("m", initialize_multisig.m);
                 },
                 Some(spl_token_event::Event::Transfer(transfer)) => {
                     tables.create_row("spl_token_transfer_events", [("signature", transaction.signature.clone()), ("instruction_index", event.instruction_index.to_string())])
