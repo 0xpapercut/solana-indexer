@@ -14,8 +14,8 @@ prost = "0.11"
 anyhow = "1"
 prost-types = "0.11"
 chrono = { version = "0.4", features = [ "std" ], default-features = false }
-spl-token-substream = { git = "https://github.com/0xpapercut/spl-token-substream", tag = "v0.1.1" }
-raydium-substream = { git = "https://github.com/0xpapercut/raydium-substream", tag = "v0.1.1" }
+spl-token-substream = { git = "https://github.com/0xpapercut/spl-token-substream", branch = "main" }
+raydium-substream = { git = "https://github.com/0xpapercut/raydium-substream", branch = "main" }
 bs58 = "0.5.1"
 
 [profile.release]
