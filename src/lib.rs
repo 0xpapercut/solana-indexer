@@ -1,4 +1,5 @@
-use substreams;
+use anyhow::{anyhow, Error, Context};
+
 use substreams_database_change::pb::database::DatabaseChanges;
 use substreams_database_change::tables::{Row, Tables};
 use substreams_solana::pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction};
@@ -29,24 +30,24 @@ mod instruction;
 use instruction::{get_indexed_instructions, IndexedInstruction, IndexedInstructions};
 
 #[substreams::handlers::map]
-fn block_database_changes(block: Block) -> Result<DatabaseChanges, String> {
+fn block_database_changes(block: Block) -> Result<DatabaseChanges, Error> {
     let mut tables = Tables::new();
     for (index, transaction) in block.transactions.iter().enumerate() {
-        match parse_transaction(transaction, index as u32, block.slot, &mut tables) {
-            Ok(true) => {
-                tables.create_row("signature", get_signature(transaction))
+        match parse_transaction(transaction, index as u32, block.slot, &mut tables)? {
+            true => {
+                tables.create_row("transactions", get_signature(transaction))
                     .set("transaction_index", index as u64)
                     .set("slot", block.slot);
             },
-            Ok(false) => (),
-            Err(e) => substreams::log::println(e),
+            false => (),
         }
     }
-    tables.create_row("slot", block.slot.to_string())
+    tables.create_row("blocks", block.slot.to_string())
         .set("parent_slot", block.parent_slot)
-        .set("height", block.block_height.unwrap().block_height)
+        .set("height", block.block_height.as_ref().unwrap().block_height)
         .set("blockhash", block.blockhash)
-        .set("previous_blockhash", block.previous_blockhash);
+        .set("previous_blockhash", block.previous_blockhash)
+        .set("timestamp", block.block_time.as_ref().unwrap().timestamp);
    Ok(tables.to_database_changes())
 }
 
@@ -55,24 +56,24 @@ fn parse_transaction<'a>(
     transaction_index: u32,
     slot: u64,
     tables: &mut Tables,
-) -> Result<bool, String> {
+) -> Result<bool, Error> {
     if let Some(_) = transaction.meta.as_ref().unwrap().err {
-        return Err(format!("Ignoring failed transaction {}", get_signature(transaction)));
+        return Ok(false);
     }
 
-    let instructions = get_indexed_instructions(transaction);
+    let instructions = get_indexed_instructions(transaction)?;
     let context = get_context(transaction)?;
 
     let mut tables_changed = false;
     for instruction in instructions.flattened().iter() {
-        match parse_instruction(instruction, &context, tables) {
-            Ok(row) => {
+        match parse_instruction(instruction, &context, tables).with_context(|| format!("Transaction {}", context.signature))? {
+            Some(row) => {
                 row
                     .set("slot", slot)
                     .set("transaction_index", transaction_index);
                 tables_changed = true;
             },
-            Err(_) => (),
+            None => (),
         }
     }
 
@@ -83,37 +84,48 @@ fn parse_instruction<'a>(
     instruction: &IndexedInstruction,
     context: &TransactionContext,
     tables: &'a mut Tables,
-) -> Result<&'a mut Row, String> {
+) -> Result<Option<&'a mut Row>, Error> {
     let program_id = instruction.program_id();
-    let row = if program_id == *SYSTEM_PROGRAM_ID {
-        parse_system_program_instruction(instruction, context, tables)
-    } else if program_id == *TOKEN_PROGRAM_ID {
-        parse_spl_token_instruction(instruction, context, tables)
-    } else if program_id == *RAYDIUM_AMM_PROGRAM_ID {
+    let row = if program_id == RAYDIUM_AMM_PROGRAM_ID {
         parse_raydium_amm_instruction(instruction, context, tables)
-    } else if program_id == *PUMPFUN_PROGRAM_ID {
+    } else if program_id == TOKEN_PROGRAM_ID {
+        parse_spl_token_instruction(instruction, context, tables)
+    } else if program_id == SYSTEM_PROGRAM_ID {
+        parse_system_program_instruction(instruction, context, tables)
+    } else if program_id == PUMPFUN_PROGRAM_ID {
         parse_pumpfun_instruction(instruction, context, tables)
-    } else if program_id == *MPL_TOKEN_METADATA_PROGRAM_ID {
+    } else if program_id == MPL_TOKEN_METADATA_PROGRAM_ID {
         parse_mpl_token_metadata_instruction(instruction, context, tables)
     } else {
-        return Err(format!("Unsupported program {}", program_id.to_string()))
+        return Ok(None);
     }?;
-    if let Some(parent_instruction) = instruction.parent_instruction() {
-        let top_instruction = instruction.top_instruction().unwrap();
-        row
-            .set("parent_instruction_program_id", parent_instruction.program_id().to_string())
-            .set("parent_instruction_index", parent_instruction.index)
-            .set("top_instruction_program_id", top_instruction.program_id().to_string())
-            .set("top_instruction_index", top_instruction.index);
+
+    if let Some(row) = row {
+        if let Some(parent_instruction) = instruction.parent_instruction() {
+            let top_instruction = instruction.top_instruction().unwrap();
+            row
+                .set("parent_instruction_program_id", parent_instruction.program_id().to_string())
+                .set("parent_instruction_index", parent_instruction.index)
+                .set("top_instruction_program_id", top_instruction.program_id().to_string())
+                .set("top_instruction_index", top_instruction.index);
+        } else {
+            row
+                .set("parent_instruction_program_id", "")
+                .set("parent_instruction_index", -1)
+                .set("top_instruction_program_id", "")
+                .set("top_instruction_index", -1);
+        }
+        Ok(Some(row))
+    } else {
+        Ok(None)
     }
-    Ok(row)
 }
 
 fn parse_system_program_instruction<'a>(
     instruction: &IndexedInstruction,
     context: &TransactionContext,
     tables: &'a mut Tables,
-) -> Result<&'a mut Row, String> {
+) -> Result<Option<&'a mut Row>, Error> {
     let row = match system_program_substream::parse_instruction(&instruction.instruction, context)? {
         Some(system_program_event::Event::CreateAccount(create_account)) => {
             tables.create_row("system_program_create_account_events", [("signature", context.signature.clone()), ("instruction_index", instruction.index.to_string())])
@@ -200,19 +212,16 @@ fn parse_system_program_instruction<'a>(
             tables.create_row("system_program_upgrade_nonce_account_events", [("signature", context.signature.clone()), ("instruction_index", instruction.index.to_string())])
                 .set("nonce_account", upgrade_nonce_account.nonce_account)
         },
-        None => return Err("No event.".into()),
-        _ => return Err("Event ignored.".into()),
+        None => return Ok(None),
     };
-    Ok(row)
+    Ok(Some(row))
 }
 
 fn parse_spl_token_instruction<'a>(
     instruction: &IndexedInstruction,
     context: &TransactionContext,
-    // transaction_index: u64,
-    // block: &Block,
     tables: &'a mut Tables,
-) -> Result<&'a mut Row, String> {
+) -> Result<Option<&'a mut Row>, Error> {
     let row = match spl_token_substream::parse_instruction(&instruction.instruction, context)? {
         Some(spl_token_event::Event::InitializeMint(initialize_mint)) => {
             let row = tables.create_row("spl_token_initialize_mint_events", [("signature", context.signature.clone()), ("instruction_index", instruction.index.to_string())])
@@ -314,35 +323,36 @@ fn parse_spl_token_instruction<'a>(
                 .set("account_owner", &initialize_immutable_owner.account.as_ref().unwrap().owner)
                 .set("mint", &initialize_immutable_owner.account.as_ref().unwrap().mint)
         },
-        None => return Err("No event.".into()),
-        _ => return Err("Event ignored.".into()),
+        Some(spl_token_event::Event::SyncNative(sync_native)) => {
+            tables.create_row("spl_token_sync_native_events", [("signature", context.signature.clone()), ("instruction_index", instruction.index.to_string())])
+                .set("account_address", &sync_native.account.as_ref().unwrap().address)
+                .set("account_owner", &sync_native.account.as_ref().unwrap().owner)
+        }
+        None => return Ok(None)
     };
-    Ok(row)
+    Ok(Some(row))
 }
 
 fn parse_raydium_amm_instruction<'a>(
     instruction: &IndexedInstruction,
     context: &TransactionContext,
-    // transaction_index: u64,
-    // block: &Block,
     tables: &'a mut Tables,
-) -> Result<&'a mut Row, String> {
-    let row = match raydium_amm_substream::parse_instruction(&instruction.instruction, context)? {
+) -> Result<Option<&'a mut Row>, Error> {
+    let row = match raydium_amm_substream::parse_instruction(&instruction.instruction, context).map_err(|x| anyhow!(x))? {
         Some(raydium_amm_event::Event::Swap(swap)) => {
-            let row = tables.create_row("raydium_swap_events", [("signature", context.signature.clone()), ("instruction_index", instruction.index.to_string())])
+            tables.create_row("raydium_amm_swap_events", [("signature", context.signature.clone()), ("instruction_index", instruction.index.to_string())])
                 .set("amm", &swap.amm)
                 .set("user", &swap.user)
                 .set("amount_in", swap.amount_in)
                 .set("amount_out", swap.amount_out)
                 .set("mint_in", &swap.mint_in)
                 .set("mint_out", &swap.mint_out)
-                .set("direction", &swap.direction);
-            if let Some(pool_pc_amount) = swap.pool_pc_amount { row.set("pool_pc_amount", pool_pc_amount); }
-            if let Some(pool_coin_amount) = swap.pool_coin_amount { row.set("pool_coin_amount", pool_coin_amount); }
-            row
+                .set("direction", &swap.direction)
+                .set("pool_pc_amount", swap.pool_pc_amount.unwrap_or(0))
+                .set("pool_coin_amount", swap.pool_coin_amount.unwrap_or(0))
         }
         Some(raydium_amm_event::Event::Initialize(initialize)) => {
-            tables.create_row("raydium_initialize_events", [("signature", context.signature.clone()), ("instruction_index", instruction.index.to_string())])
+            tables.create_row("raydium_amm_initialize_events", [("signature", context.signature.clone()), ("instruction_index", instruction.index.to_string())])
                 .set("amm", &initialize.amm)
                 .set("user", &initialize.user)
                 .set("pc_init_amount", initialize.pc_init_amount)
@@ -353,7 +363,7 @@ fn parse_raydium_amm_instruction<'a>(
                 .set("lp_mint", &initialize.lp_mint)
         },
         Some(raydium_amm_event::Event::Deposit(deposit)) => {
-            tables.create_row("raydium_deposit_events", [("signature", context.signature.clone()), ("instruction_index", instruction.index.to_string())])
+            tables.create_row("raydium_amm_deposit_events", [("signature", context.signature.clone()), ("instruction_index", instruction.index.to_string())])
                 .set("amm", &deposit.amm)
                 .set("user", &deposit.user)
                 .set("pc_amount", deposit.pc_amount)
@@ -364,7 +374,7 @@ fn parse_raydium_amm_instruction<'a>(
                 .set("lp_mint", &deposit.lp_mint)
         },
         Some(raydium_amm_event::Event::Withdraw(withdraw)) => {
-            tables.create_row("raydium_withdraw_events", [("signature", context.signature.clone()), ("instruction_index", instruction.index.to_string())])
+            tables.create_row("raydium_amm_withdraw_events", [("signature", context.signature.clone()), ("instruction_index", instruction.index.to_string())])
                 .set("amm", &withdraw.amm)
                 .set("user", &withdraw.user)
                 .set("pc_amount", withdraw.pc_amount)
@@ -375,28 +385,24 @@ fn parse_raydium_amm_instruction<'a>(
                 .set("lp_mint", &withdraw.lp_mint)
         },
         Some(raydium_amm_event::Event::WithdrawPnl(withdraw_pnl)) => {
-            let row = tables.create_row("raydium_withdraw_pnl_events", [("signature", context.signature.clone()), ("instruction_index", instruction.index.to_string())])
+            tables.create_row("raydium_amm_withdraw_pnl_events", [("signature", context.signature.clone()), ("instruction_index", instruction.index.to_string())])
                 .set("amm", withdraw_pnl.amm)
-                .set("user", withdraw_pnl.user);
-            if let Some(pc_amount) = withdraw_pnl.pc_amount { row.set("pc_amount", pc_amount); }
-            if let Some(coin_amount) = withdraw_pnl.coin_amount { row.set("coin_amount", coin_amount); }
-            if let Some(pc_mint) = withdraw_pnl.pc_mint { row.set("pc_mint", pc_mint); }
-            if let Some(coin_mint) = withdraw_pnl.coin_mint { row.set("coin_mint", coin_mint); }
-            row
+                .set("user", withdraw_pnl.user)
+                .set("pc_amount", withdraw_pnl.pc_amount.unwrap_or(0))
+                .set("coin_amount", withdraw_pnl.coin_amount.unwrap_or(0))
+                .set("pc_mint", withdraw_pnl.pc_mint.unwrap_or("".to_string()))
+                .set("coin_mint", withdraw_pnl.coin_mint.unwrap_or("".to_string()))
         }
-        None => return Err("No event.".into()),
-        _ => return Err("Event ignored.".into()),
+        _ => return Ok(None),
     };
-    Ok(row)
+    Ok(Some(row))
 }
 
 fn parse_pumpfun_instruction<'a>(
     instruction: &IndexedInstruction,
     context: &TransactionContext,
-    // transaction_index: u64,
-    // block: &Block,
     tables: &'a mut Tables,
-) -> Result<&'a mut Row, String> {
+) -> Result<Option<&'a mut Row>, Error> {
     let row = match pumpfun_substream::parse_instruction(&instruction.instruction, context)? {
         Some(pumpfun_event::Event::Create(create)) => {
             tables.create_row("pumpfun_create_events", [("signature", context.signature.clone()), ("instruction_index", instruction.index.to_string())])
@@ -424,37 +430,33 @@ fn parse_pumpfun_instruction<'a>(
                 .set("fee_basis_points", set_params.fee_basis_points)
         },
         Some(pumpfun_event::Event::Swap(swap)) => {
-            let row = tables.create_row("pumpfun_swap_events", [("signature", context.signature.clone()), ("instruction_index", instruction.index.to_string())])
+            tables.create_row("pumpfun_swap_events", [("signature", context.signature.clone()), ("instruction_index", instruction.index.to_string())])
                 .set("user", swap.user)
                 .set("mint", swap.mint)
                 .set("bonding_curve", swap.bonding_curve)
                 .set("token_amount", swap.token_amount)
-                .set("direction", swap.direction);
-            if let Some(sol_amount) = swap.sol_amount { row.set("sol_amount", sol_amount); }
-            if let Some(virtual_sol_reserves) = swap.virtual_sol_reserves { row.set("virtual_sol_reserves", virtual_sol_reserves); }
-            if let Some(virtual_token_reserves) = swap.virtual_token_reserves { row.set("virtual_token_reserves", virtual_token_reserves); }
-            if let Some(real_sol_reserves) = swap.real_sol_reserves { row.set("real_sol_reserves", real_sol_reserves); }
-            if let Some(real_token_reserves) = swap.real_token_reserves { row.set("real_token_reserves", real_token_reserves); }
-            row
+                .set("direction", swap.direction)
+                .set("sol_amount", swap.sol_amount.unwrap_or(0))
+                .set("virtual_sol_reserves", swap.virtual_sol_reserves.unwrap_or(0))
+                .set("virtual_token_reserves", swap.virtual_token_reserves.unwrap_or(0))
+                .set("real_sol_reserves", swap.real_sol_reserves.unwrap_or(0))
+                .set("real_token_reserves", swap.real_token_reserves.unwrap_or(0))
         },
         Some(pumpfun_event::Event::Withdraw(withdraw)) => {
             tables.create_row("pumpfun_withdraw_events", [("signature", context.signature.clone()), ("instruction_index", instruction.index.to_string())])
                 .set("mint", withdraw.mint)
         },
-        None => return Err("No event.".into()),
-        _ => return Err("Event ignored.".into()),
+        None => return Ok(None)
     };
-    Ok(row)
+    Ok(Some(row))
 }
 
 fn parse_mpl_token_metadata_instruction<'a>(
     instruction: &IndexedInstruction,
     context: &TransactionContext,
-    // transaction_index: u64,
-    // block: &Block,
     tables: &'a mut Tables,
-) -> Result<&'a mut Row, String> {
-    let row = match mpl_token_metadata_substream::parse_instruction(&instruction.instruction, context)? {
+) -> Result<Option<&'a mut Row>, Error> {
+    let row = match mpl_token_metadata_substream::parse_instruction(&instruction.instruction, context).map_err(|x| anyhow!(x))? {
         Some(mpl_token_metadata_event::Event::CreateMetadataAccountV3(create_metadata_account_v3)) => {
             let data = create_metadata_account_v3.data.unwrap();
             let row = tables.create_row("mpl_token_metadata_create_metadata_account_v3_events", [("signature", context.signature.clone()), ("instruction_index", instruction.index.to_string())])
@@ -688,8 +690,7 @@ fn parse_mpl_token_metadata_instruction<'a>(
             tables.create_row("mpl_token_metadata_other_events", [("signature", context.signature.clone()), ("instruction_index", instruction.index.to_string())])
                 .set("type", "verify_collection")
         },
-        None => return Err("No event.".into()),
-        _ => return Err("Event ignored.".into()),
+        None => return Ok(None),
     };
-    Ok(row)
+    Ok(Some(row))
 }

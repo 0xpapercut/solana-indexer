@@ -1,5 +1,6 @@
 use std::cell::{Ref, RefCell};
 use std::rc::{Rc, Weak};
+use anyhow::Error;
 
 use substreams_solana::pb::sf::solana::r#type::v1::ConfirmedTransaction;
 use substreams_solana_utils::instruction::{get_structured_instructions, StructuredInstruction, StructuredInstructions};
@@ -46,7 +47,7 @@ impl<'a> IndexedInstruction<'a> {
     }
 }
 
-pub fn get_indexed_instructions<'a>(transaction: &'a ConfirmedTransaction) -> Vec<Rc<IndexedInstruction<'a>>> {
+pub fn get_indexed_instructions<'a>(transaction: &'a ConfirmedTransaction) -> Result<Vec<Rc<IndexedInstruction<'a>>>, Error> {
     let mut indexed_instructions: Vec<Rc<IndexedInstruction<'a>>> = Vec::new();
 
     let structured_instructions = get_structured_instructions(transaction).unwrap();
@@ -77,7 +78,7 @@ pub fn get_indexed_instructions<'a>(transaction: &'a ConfirmedTransaction) -> Ve
         }
     }
 
-    indexed_instructions
+    Ok(indexed_instructions)
 }
 
 pub trait IndexedInstructions<'a> {
