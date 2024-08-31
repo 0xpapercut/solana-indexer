@@ -15,6 +15,7 @@ pub struct IndexedInstruction<'a> {
     pub index: i32,
 }
 
+#[allow(unused)]
 impl<'a> IndexedInstruction<'a> {
     pub fn new(instruction: Rc<StructuredInstruction<'a>>, index: i32) -> Self {
         IndexedInstruction {
