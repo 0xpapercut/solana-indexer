@@ -11,7 +11,6 @@ CREATE TABLE blocks
 )
 ENGINE = MergeTree
 PRIMARY KEY slot;
--- ORDER BY slot DESC;
 
 -- TRANSACTIONS
 
@@ -24,7 +23,6 @@ CREATE TABLE transactions
 )
 ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index);
--- ORDER BY (slot DESC, transaction_index DESC);
 
 -- RAYDIUM AMM EVENTS
 
@@ -474,6 +472,7 @@ CREATE TABLE system_program_transfer_events
     recipient_account LowCardinality(VARCHAR(44)) CODEC(LZ4),
     lamports UInt64,
     PROJECTION projection_funding_account (SELECT * ORDER BY funding_account),
+    PROJECTION projection_recipient_account (SELECT * ORDER BY recipient_account),
     parent_instruction_index Int64 DEFAULT -1,
     top_instruction_index Int64 DEFAULT -1,
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),

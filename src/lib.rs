@@ -35,9 +35,8 @@ fn block_database_changes(block: Block) -> Result<DatabaseChanges, Error> {
     for (index, transaction) in block.transactions.iter().enumerate() {
         match parse_transaction(transaction, index as u32, block.slot, &mut tables)? {
             true => {
-                tables.create_row("transactions", get_signature(transaction))
-                    .set("transaction_index", index as u64)
-                    .set("slot", block.slot);
+                tables.create_row("transactions", [("slot", block.slot.to_string()), ("transaction_index", index.to_string())])
+                    .set("signature", get_signature(transaction));
             },
             false => (),
         }
