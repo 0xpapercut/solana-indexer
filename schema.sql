@@ -28,7 +28,6 @@ PRIMARY KEY (slot, transaction_index);
 
 CREATE TABLE raydium_amm_swap_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -53,7 +52,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE raydium_amm_initialize_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -77,7 +75,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE raydium_amm_deposit_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -101,7 +98,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE raydium_amm_withdraw_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -125,7 +121,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE raydium_amm_withdraw_pnl_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -149,7 +144,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_initialize_mint_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -168,7 +162,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_initialize_account_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -187,7 +180,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_initialize_multisig_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     instruction_index UInt64,
     transaction_index UInt64,
@@ -205,7 +197,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_transfer_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -229,7 +220,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_approve_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -250,7 +240,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_revoke_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -269,7 +258,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_set_authority_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     instruction_index UInt64,
     transaction_index UInt64,
@@ -286,7 +274,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_mint_to_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -307,7 +294,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_burn_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -328,7 +314,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_close_account_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -349,7 +334,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_freeze_account_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -369,7 +353,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_thaw_account_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     instruction_index UInt64,
     transaction_index UInt64,
@@ -389,7 +372,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_initialize_immutable_owner_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -408,7 +390,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_sync_native_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -427,7 +408,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE system_program_create_account_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -447,7 +427,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE system_program_assign_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -464,7 +443,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE system_program_transfer_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -483,7 +461,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE system_program_create_account_with_seed_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -504,7 +481,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE system_program_advance_nonce_account_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -520,7 +496,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE system_program_withdraw_nonce_account_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -538,7 +513,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE system_program_initialize_nonce_account_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -555,7 +529,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE system_program_authorize_nonce_account_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -572,7 +545,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE system_program_allocate_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -588,7 +560,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE system_program_allocate_with_seed_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -607,7 +578,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE system_program_assign_with_seed_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -625,7 +595,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE system_program_transfer_with_seed_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -648,7 +617,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE system_program_upgrade_nonce_account_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     instruction_index UInt64,
     transaction_index UInt64,
@@ -665,7 +633,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE pumpfun_create_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -689,7 +656,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE pumpfun_initialize_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -705,7 +671,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE pumpfun_set_params_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -726,7 +691,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE pumpfun_swap_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -753,7 +717,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE pumpfun_withdraw_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -771,7 +734,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE mpl_token_metadata_create_metadata_account_v3_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
@@ -795,7 +757,6 @@ PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE mpl_token_metadata_other_events
 (
-    signature VARCHAR(88) CODEC(LZ4),
     slot UInt64,
     transaction_index UInt64,
     instruction_index UInt64,
