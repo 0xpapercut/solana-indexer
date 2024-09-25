@@ -18,7 +18,7 @@ spl-token-substream = { git = "https://github.com/0xpapercut/spl-token-substream
 raydium-amm-substream = { git = "https://github.com/0xpapercut/raydium-amm-substream", branch = "main" }
 mpl-token-metadata-substream = { git = "https://github.com/0xpapercut/mpl-token-metadata-substream", branch = "main" }
 pumpfun-substream = { git = "https://github.com/0xpapercut/pumpfun-substream", branch = "main" }
-system-program-substream = { git = "https://github.com/0xpapercut/solana-system-program-substream", branch = "main" }
+system-program-substream = { git = "https://github.com/0xpapercut/system-program-substream", branch = "main" }
 substreams-solana-utils = { git = "https://github.com/0xpapercut/substreams-solana-utils", branch = "main" }
 bs58 = "0.5.1"
 
