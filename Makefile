@@ -19,7 +19,7 @@ stream: build
 	fi
 
 .PHONY: setup_db
-setup_db:
+setup_db: build
 	substreams-sink-sql setup $(DSN) $(MANIFEST)
 
 .PHONY: sink
