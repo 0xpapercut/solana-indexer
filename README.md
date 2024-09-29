@@ -1,5 +1,16 @@
-# solana-clickhouse
-Sink SPL Token and Raydium events into a Clickhouse database.
+# solana-indexer
+Index the Solana chain using Substreams and Clickhouse.
+
+## Supported Programs
+- Raydium AMM
+- SPL Token Program
+- Pumpfun
+- System Program
+- MPL Token Metadata (limited support)
+
+You can checkout [`schema.sql`](schema.sql) to see the data that is indexed.
+
+If you have any suggestions on other programs that should be supported, feel free to open an issue!
 
 ## Usage
 1. [Download `substream-sink-sql` v4.2.0](https://github.com/streamingfast/substreams-sink-sql/releases/tag/v4.2.0).
