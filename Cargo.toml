@@ -14,12 +14,12 @@ prost = "0.11"
 anyhow = "1"
 prost-types = "0.11"
 chrono = { version = "0.4", features = [ "std" ], default-features = false }
-spl-token-substream = { git = "https://github.com/0xpapercut/spl-token-substream", branch = "main" }
-raydium-amm-substream = { git = "https://github.com/0xpapercut/raydium-amm-substream", branch = "main" }
-mpl-token-metadata-substream = { git = "https://github.com/0xpapercut/mpl-token-metadata-substream", branch = "main" }
-pumpfun-substream = { git = "https://github.com/0xpapercut/pumpfun-substream", branch = "main" }
-system-program-substream = { git = "https://github.com/0xpapercut/system-program-substream", branch = "main" }
 substreams-solana-utils = { git = "https://github.com/0xpapercut/substreams-solana-utils", branch = "main" }
+spl-token-substream = { git = "https://github.com/0xpapercut/solana-substreams", branch = "main" }
+raydium-amm-substream = { git = "https://github.com/0xpapercut/solana-substreams", branch = "main" }
+mpl-token-metadata-substream = { git = "https://github.com/0xpapercut/solana-substreams", branch = "main" }
+pumpfun-substream = { git = "https://github.com/0xpapercut/solana-substreams", branch = "main" }
+system-program-substream = { git = "https://github.com/0xpapercut/solana-substreams", branch = "main" }
 bs58 = "0.5.1"
 
 [profile.release]
