@@ -46,7 +46,7 @@ fn block_database_changes(block: Block) -> Result<DatabaseChanges, Error> {
         .set("height", block.block_height.as_ref().unwrap().block_height)
         .set("blockhash", block.blockhash)
         .set("previous_blockhash", block.previous_blockhash)
-        .set("timestamp", block.block_time.as_ref().unwrap().timestamp);
+        .set("block_time", block.block_time.as_ref().unwrap().timestamp);
    Ok(tables.to_database_changes())
 }
 

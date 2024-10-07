@@ -4,10 +4,11 @@ CREATE TABLE blocks
 (
     slot UInt64,
     parent_slot UInt64,
-    height UInt64,
+    block_height UInt64,
     blockhash VARCHAR(88),
     previous_blockhash VARCHAR(88),
-    timestamp DateTime,
+    block_time DateTime,
+    insertion_time DateTime DEFAULT now(),
 )
 ENGINE = ReplacingMergeTree
 PRIMARY KEY slot;
@@ -16,10 +17,10 @@ PRIMARY KEY slot;
 
 CREATE TABLE transactions
 (
-    signature VARCHAR(88),
-    transaction_index UInt64,
     slot UInt64,
-    PROJECTION projection (SELECT * ORDER BY (slot, transaction_index))
+    transaction_index UInt64,
+    signature VARCHAR(88),
+    PROJECTION projection (SELECT * ORDER BY signature)
 )
 ENGINE = ReplacingMergeTree
 PRIMARY KEY (slot, transaction_index);
