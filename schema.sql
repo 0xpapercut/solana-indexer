@@ -10,7 +10,7 @@ CREATE TABLE blocks
     block_time DateTime,
     insertion_time DateTime DEFAULT now(),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY slot;
 
 -- TRANSACTIONS
@@ -20,9 +20,11 @@ CREATE TABLE transactions
     slot UInt64,
     transaction_index UInt64,
     signature VARCHAR(88),
+    signer VARCHAR(44),
+    -- signers Array(VARCHAR(44)),
     PROJECTION projection (SELECT * ORDER BY signature)
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index);
 
 -- RAYDIUM AMM EVENTS
@@ -48,7 +50,7 @@ CREATE TABLE raydium_amm_swap_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE raydium_amm_initialize_events
@@ -71,7 +73,7 @@ CREATE TABLE raydium_amm_initialize_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE raydium_amm_deposit_events
@@ -83,6 +85,8 @@ CREATE TABLE raydium_amm_deposit_events
     user LowCardinality(VARCHAR(44)) CODEC(LZ4),
     pc_amount UInt64,
     coin_amount UInt64,
+    pool_pc_amount UInt64,
+    pool_coin_amount UInt64,
     lp_amount UInt64,
     pc_mint LowCardinality(VARCHAR(44)) CODEC(LZ4),
     coin_mint LowCardinality(VARCHAR(44)) CODEC(LZ4),
@@ -94,7 +98,7 @@ CREATE TABLE raydium_amm_deposit_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE raydium_amm_withdraw_events
@@ -107,6 +111,8 @@ CREATE TABLE raydium_amm_withdraw_events
     pc_amount UInt64,
     coin_amount UInt64,
     lp_amount UInt64,
+    pool_pc_amount UInt64,
+    pool_coin_amount UInt64,
     pc_mint LowCardinality(VARCHAR(44)) CODEC(LZ4),
     coin_mint LowCardinality(VARCHAR(44)) CODEC(LZ4),
     lp_mint LowCardinality(VARCHAR(44)) CODEC(LZ4),
@@ -117,7 +123,7 @@ CREATE TABLE raydium_amm_withdraw_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE raydium_amm_withdraw_pnl_events
@@ -138,7 +144,7 @@ CREATE TABLE raydium_amm_withdraw_pnl_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 -- SPL TOKEN EVENTS
@@ -158,7 +164,7 @@ CREATE TABLE spl_token_initialize_mint_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_initialize_account_events
@@ -176,14 +182,14 @@ CREATE TABLE spl_token_initialize_account_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_initialize_multisig_events
 (
     slot UInt64,
-    instruction_index UInt64,
     transaction_index UInt64,
+    instruction_index UInt64,
     multisig VARCHAR(44) CODEC(LZ4),
     -- signers Array(LowCardinality(VARCHAR(44))) CODEC(LZ4),
     m UInt64,
@@ -193,7 +199,7 @@ CREATE TABLE spl_token_initialize_multisig_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_transfer_events
@@ -216,7 +222,7 @@ CREATE TABLE spl_token_transfer_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_approve_events
@@ -236,7 +242,7 @@ CREATE TABLE spl_token_approve_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_revoke_events
@@ -254,14 +260,14 @@ CREATE TABLE spl_token_revoke_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_set_authority_events
 (
     slot UInt64,
-    instruction_index UInt64,
     transaction_index UInt64,
+    instruction_index UInt64,
     mint LowCardinality(VARCHAR(44)) CODEC(LZ4),
     authority_type LowCardinality(VARCHAR(14)) CODEC(LZ4),
     new_authority LowCardinality(VARCHAR(44)) CODEC(LZ4),
@@ -270,7 +276,7 @@ CREATE TABLE spl_token_set_authority_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_mint_to_events
@@ -290,7 +296,7 @@ CREATE TABLE spl_token_mint_to_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_burn_events
@@ -310,7 +316,7 @@ CREATE TABLE spl_token_burn_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_close_account_events
@@ -330,7 +336,7 @@ CREATE TABLE spl_token_close_account_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_freeze_account_events
@@ -349,14 +355,14 @@ CREATE TABLE spl_token_freeze_account_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_thaw_account_events
 (
     slot UInt64,
-    instruction_index UInt64,
     transaction_index UInt64,
+    instruction_index UInt64,
     source_address LowCardinality(VARCHAR(44)) CODEC(LZ4),
     source_owner LowCardinality(VARCHAR(44)) CODEC(LZ4),
     mint LowCardinality(VARCHAR(44)) CODEC(LZ4),
@@ -368,7 +374,7 @@ CREATE TABLE spl_token_thaw_account_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_initialize_immutable_owner_events
@@ -386,7 +392,7 @@ CREATE TABLE spl_token_initialize_immutable_owner_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE spl_token_sync_native_events
@@ -402,7 +408,7 @@ CREATE TABLE spl_token_sync_native_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 -- SYSTEM PROGRAM EVENTS
@@ -423,7 +429,7 @@ CREATE TABLE system_program_create_account_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE system_program_assign_events
@@ -439,7 +445,7 @@ CREATE TABLE system_program_assign_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE system_program_transfer_events
@@ -457,7 +463,7 @@ CREATE TABLE system_program_transfer_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE system_program_create_account_with_seed_events
@@ -477,7 +483,7 @@ CREATE TABLE system_program_create_account_with_seed_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE system_program_advance_nonce_account_events
@@ -492,7 +498,7 @@ CREATE TABLE system_program_advance_nonce_account_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE system_program_withdraw_nonce_account_events
@@ -509,7 +515,7 @@ CREATE TABLE system_program_withdraw_nonce_account_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE system_program_initialize_nonce_account_events
@@ -524,7 +530,7 @@ CREATE TABLE system_program_initialize_nonce_account_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 
@@ -541,7 +547,7 @@ CREATE TABLE system_program_authorize_nonce_account_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE system_program_allocate_events
@@ -556,7 +562,7 @@ CREATE TABLE system_program_allocate_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE system_program_allocate_with_seed_events
@@ -574,7 +580,7 @@ CREATE TABLE system_program_allocate_with_seed_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE system_program_assign_with_seed_events
@@ -591,7 +597,7 @@ CREATE TABLE system_program_assign_with_seed_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE system_program_transfer_with_seed_events
@@ -612,22 +618,22 @@ CREATE TABLE system_program_transfer_with_seed_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 
 CREATE TABLE system_program_upgrade_nonce_account_events
 (
     slot UInt64,
-    instruction_index UInt64,
     transaction_index UInt64,
+    instruction_index UInt64,
     nonce_account LowCardinality(VARCHAR(44)) CODEC(LZ4),
     parent_instruction_index Int64 DEFAULT -1,
     top_instruction_index Int64 DEFAULT -1,
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 -- PUMPFUN EVENTS
@@ -652,7 +658,7 @@ CREATE TABLE pumpfun_create_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE pumpfun_initialize_events
@@ -667,7 +673,7 @@ CREATE TABLE pumpfun_initialize_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE pumpfun_set_params_events
@@ -687,7 +693,7 @@ CREATE TABLE pumpfun_set_params_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE pumpfun_swap_events
@@ -713,7 +719,7 @@ CREATE TABLE pumpfun_swap_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE pumpfun_withdraw_events
@@ -728,7 +734,7 @@ CREATE TABLE pumpfun_withdraw_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 -- MPL TOKEN METADATA EVENTS
@@ -753,7 +759,7 @@ CREATE TABLE mpl_token_metadata_create_metadata_account_v3_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
 
 CREATE TABLE mpl_token_metadata_other_events
@@ -768,5 +774,5 @@ CREATE TABLE mpl_token_metadata_other_events
     parent_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
     top_instruction_program_id LowCardinality(VARCHAR(44)) DEFAULT '' CODEC(LZ4),
 )
-ENGINE = ReplacingMergeTree
+ENGINE = MergeTree
 PRIMARY KEY (slot, transaction_index, instruction_index);
