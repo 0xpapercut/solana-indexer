@@ -10,6 +10,13 @@ CREATE FUNCTION getPumpfunMigrationRaydiumAMM AS (mint) -> (
     ) AND signer0 = pumpfunRaydiumMigrationSigner()
 );
 
+DROP FUNCTION IF EXISTS getTransactionSignature;
+CREATE FUNCTION getTransactionSignature AS (slot_, transaction_index_) -> (
+    SELECT signature
+    FROM transactions a
+    WHERE slot = slot_ AND transaction_index = transaction_index_
+);
+
 DROP FUNCTION IF EXISTS raydiumAmmProgramID;
 CREATE FUNCTION raydiumAmmProgramID AS () -> '675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8';
 
