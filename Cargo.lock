@@ -111,9 +111,9 @@ dependencies = [
 
 [[package]]
 name = "bytemuck"
-version = "1.18.0"
+version = "1.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "94bbb0ad554ad961ddc5da507a12a29b14e4ae5bda06b19f575a3e6079d2e2ae"
+checksum = "8334215b81e418a0a7bdb8ef0849474f40bb10c8b71f1c4ed315cff49f32494d"
 
 [[package]]
 name = "bytes"
@@ -299,8 +299,8 @@ checksum = "78ca9ab1a0babb1e7d5695e3530886289c18cf2f87ec19a575a0abdce112e3a3"
 
 [[package]]
 name = "mpl-token-metadata-substream"
-version = "0.1.1"
-source = "git+https://github.com/0xpapercut/solana-substreams#5c87d79f93481bdedd79766541c10b25656d2ede"
+version = "0.1.3"
+source = "git+https://github.com/0xpapercut/solana-substreams?tag=v0.1.3#b7f7963b25fc473ee48ffe7247a8b67e819cc933"
 dependencies = [
  "borsh",
  "bs58 0.5.1",
@@ -494,9 +494,9 @@ dependencies = [
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.86"
+version = "1.0.87"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5e719e8df665df0d1c8fbfd238015744736151d4445ec0836b8e628aae103b77"
+checksum = "b3e4daa0dcf6feba26f985457cdf104d4b4256fc5a09547140f3631bb076b19a"
 dependencies = [
  "unicode-ident",
 ]
@@ -557,8 +557,8 @@ dependencies = [
 
 [[package]]
 name = "pumpfun-substream"
-version = "0.1.0"
-source = "git+https://github.com/0xpapercut/solana-substreams#5c87d79f93481bdedd79766541c10b25656d2ede"
+version = "0.1.3"
+source = "git+https://github.com/0xpapercut/solana-substreams?tag=v0.1.3#b7f7963b25fc473ee48ffe7247a8b67e819cc933"
 dependencies = [
  "anyhow",
  "borsh",
@@ -583,9 +583,10 @@ dependencies = [
 
 [[package]]
 name = "raydium-amm-substream"
-version = "0.1.1"
-source = "git+https://github.com/0xpapercut/solana-substreams#5c87d79f93481bdedd79766541c10b25656d2ede"
+version = "0.1.3"
+source = "git+https://github.com/0xpapercut/solana-substreams?tag=v0.1.3#b7f7963b25fc473ee48ffe7247a8b67e819cc933"
 dependencies = [
+ "anyhow",
  "arrayref",
  "base64",
  "bincode",
@@ -683,7 +684,7 @@ dependencies = [
 
 [[package]]
 name = "solana-clickhouse"
-version = "0.1.0"
+version = "0.1.3"
 dependencies = [
  "anyhow",
  "bs58 0.5.1",
@@ -695,7 +696,7 @@ dependencies = [
  "raydium-amm-substream",
  "spl-token-substream",
  "substreams",
- "substreams-database-change 1.3.1 (git+https://github.com/streamingfast/substreams-sink-database-changes?branch=develop)",
+ "substreams-database-change",
  "substreams-solana",
  "substreams-solana-utils",
  "system-program-substream",
@@ -703,8 +704,8 @@ dependencies = [
 
 [[package]]
 name = "spl-token-substream"
-version = "0.1.1"
-source = "git+https://github.com/0xpapercut/solana-substreams#5c87d79f93481bdedd79766541c10b25656d2ede"
+version = "0.1.2"
+source = "git+https://github.com/0xpapercut/solana-substreams?tag=v0.1.3#b7f7963b25fc473ee48ffe7247a8b67e819cc933"
 dependencies = [
  "anyhow",
  "bs58 0.5.1",
@@ -736,17 +737,6 @@ dependencies = [
  "prost-types",
  "substreams-macro",
  "thiserror",
-]
-
-[[package]]
-name = "substreams-database-change"
-version = "1.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ed32ca6fc7fa4b7a684d3abd5bb0545aadd2df82402e7336443cdbb6f8b350c3"
-dependencies = [
- "prost",
- "prost-types",
- "substreams",
 ]
 
 [[package]]
@@ -804,8 +794,8 @@ dependencies = [
 
 [[package]]
 name = "substreams-solana-utils"
-version = "0.1.1"
-source = "git+https://github.com/0xpapercut/substreams-solana-utils?branch=main#3db183b9077a8e78a0e6e6e6f7bcbfa7610987e2"
+version = "0.1.3"
+source = "git+https://github.com/0xpapercut/substreams-solana-utils?tag=v0.1.3#a50b773304b4decb48f3e4eb60228391d8a1e93c"
 dependencies = [
  "anyhow",
  "base64",
@@ -853,7 +843,7 @@ dependencies = [
 [[package]]
 name = "system-program-substream"
 version = "0.1.1"
-source = "git+https://github.com/0xpapercut/solana-substreams#5c87d79f93481bdedd79766541c10b25656d2ede"
+source = "git+https://github.com/0xpapercut/solana-substreams?tag=v0.1.3#b7f7963b25fc473ee48ffe7247a8b67e819cc933"
 dependencies = [
  "anyhow",
  "borsh",
@@ -861,7 +851,6 @@ dependencies = [
  "lazy_static",
  "prost",
  "substreams",
- "substreams-database-change 1.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "substreams-solana",
  "substreams-solana-utils",
 ]
