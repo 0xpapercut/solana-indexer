@@ -13,11 +13,12 @@ You can checkout [`schema.sql`](schema.sql) to see the data that is indexed.
 If you have any suggestions on other programs that should be supported, feel free to open an issue!
 
 ## Usage
-1. [Download `substream-sink-sql` v4.2.0](https://github.com/streamingfast/substreams-sink-sql/releases/tag/v4.2.0).
-2. Setup `DSN` and `STREAMINGFAST_KEY` environment variables.
-3. Run `make setup_db` to setup the necessary tables.
-4. Run `. ./token.sh` to setup the `SUBSTREAMS_API_TOKEN` environment variable.
-5. Run the sink with `make sink START=<slot>`.
+1. Use the v0.1.3 tag: `git clone https://github.com/0xpapercut/solana-indexer.git --branch v0.1.3`
+2. [Download `substream-sink-sql` v4.2.0](https://github.com/streamingfast/substreams-sink-sql/releases/tag/v4.2.0).
+3. Setup `DSN` and `STREAMINGFAST_KEY` environment variables.
+4. Run `make setup_db` to setup the necessary tables.
+5. Run `. ./token.sh` to setup the `SUBSTREAMS_API_TOKEN` environment variable.
+6. Run the sink with `make sink START=<slot>`.
 
 Please note that setting up `DSN` involves creating a clickhouse database and making it available by some combination of connection and credentials, both of which are described by the `DSN` variable.
 
