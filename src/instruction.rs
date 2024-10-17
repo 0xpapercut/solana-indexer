@@ -33,7 +33,7 @@ impl<'a> IndexedInstruction<'a> {
     pub fn accounts(&self) -> &Vec<PubkeyRef> { self.instruction.accounts() }
     pub fn data(&self) -> &Vec<u8> { self.instruction.data() }
     pub fn stack_height(&self) -> Option<u32> { self.instruction.stack_height() }
-    pub fn logs(&self) -> Ref<Vec<Log<'a>>> { self.instruction.logs() }
+    pub fn logs(&self) -> Ref<Option<Vec<Log<'a>>>> { self.instruction.logs() }
 
     pub fn top_instruction(&self) -> Option<Rc<Self>> {
         if let Some(instruction) = self.parent_instruction() {
