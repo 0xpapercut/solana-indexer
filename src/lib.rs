@@ -4,7 +4,7 @@ use substreams_database_change::pb::database::DatabaseChanges;
 use substreams_database_change::tables::{Row, Tables};
 use substreams_solana::pb::sf::solana::r#type::v1::{Block, ConfirmedTransaction};
 
-use substreams_solana_utils::transaction::{get_signature, get_context, TransactionContext};
+use substreams_solana_utils::transaction::{get_context, get_signature, get_signers, TransactionContext};
 use substreams_solana_utils::system_program::constants::SYSTEM_PROGRAM_ID;
 use substreams_solana_utils::spl_token::constants::TOKEN_PROGRAM_ID;
 
@@ -33,17 +33,22 @@ use instruction::{get_indexed_instructions, IndexedInstruction, IndexedInstructi
 fn block_database_changes(block: Block) -> Result<DatabaseChanges, Error> {
     let mut tables = Tables::new();
     for (index, transaction) in block.transactions.iter().enumerate() {
-        match parse_transaction(transaction, index as u32, block.slot, &mut tables)? {
+        match parse_transaction(transaction, index as u32, block.slot, &block.blockhash, &mut tables)? {
             true => {
-                tables.create_row("transactions", [("slot", block.slot.to_string()), ("transaction_index", index.to_string())])
-                    .set("signature", get_signature(transaction));
+                let signers = get_signers(transaction);
+                let row = tables.create_row("transactions", [("slot", block.slot.to_string()), ("transaction_index", index.to_string())])
+                    .set("signature", get_signature(transaction))
+                    .set("number_of_signers", signers.len().to_string());
+                for i in 0..8 {
+                    row.set(&format!("signer{i}"), signers.get(i).unwrap_or(&"".into()));
+                }
             },
             false => (),
         }
     }
     tables.create_row("blocks", block.slot.to_string())
         .set("parent_slot", block.parent_slot)
-        .set("height", block.block_height.as_ref().unwrap().block_height)
+        .set("block_height", block.block_height.as_ref().unwrap().block_height)
         .set("blockhash", block.blockhash)
         .set("previous_blockhash", block.previous_blockhash)
         .set("block_time", block.block_time.as_ref().unwrap().timestamp);
@@ -54,6 +59,7 @@ fn parse_transaction<'a>(
     transaction: &ConfirmedTransaction,
     transaction_index: u32,
     slot: u64,
+    blockhash: &String,
     tables: &mut Tables,
 ) -> Result<bool, Error> {
     if let Some(_) = transaction.meta.as_ref().unwrap().err {
@@ -68,8 +74,8 @@ fn parse_transaction<'a>(
         match parse_instruction(instruction, &context, tables, slot, transaction_index).with_context(|| format!("Transaction {}", context.signature))? {
             Some(row) => {
                 row
-                    .set("slot", slot)
-                    .set("transaction_index", transaction_index);
+                    .set("partial_signature", &context.signature[0..4])
+                    .set("partial_blockhash", &blockhash[0..4]);
                 tables_changed = true;
             },
             None => (),
@@ -375,6 +381,8 @@ fn parse_raydium_amm_instruction<'a>(
                 .set("user", &deposit.user)
                 .set("pc_amount", deposit.pc_amount)
                 .set("coin_amount", deposit.coin_amount)
+                .set("pool_pc_amount", deposit.pool_pc_amount.unwrap_or(0))
+                .set("pool_coin_amount", deposit.pool_coin_amount.unwrap_or(0))
                 .set("lp_amount", deposit.lp_amount)
                 .set("pc_mint", &deposit.pc_mint)
                 .set("coin_mint", &deposit.coin_mint)
@@ -386,6 +394,8 @@ fn parse_raydium_amm_instruction<'a>(
                 .set("user", &withdraw.user)
                 .set("pc_amount", withdraw.pc_amount)
                 .set("coin_amount", withdraw.coin_amount)
+                .set("pool_pc_amount", withdraw.pool_pc_amount.unwrap_or(0))
+                .set("pool_coin_amount", withdraw.pool_coin_amount.unwrap_or(0))
                 .set("lp_amount", withdraw.lp_amount)
                 .set("pc_mint", &withdraw.pc_mint)
                 .set("coin_mint", &withdraw.coin_mint)
