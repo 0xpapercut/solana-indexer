@@ -1,3 +1,7 @@
+-- FUNCTIONS
+
+CREATE FUNCTION getPairHash AS (mint0, mint1) -> cityHash64(if(mint_in < mint_out, concat(mint_in, mint_out), concat(mint_out, mint_in)));
+
 -- BLOCKS
 
 CREATE TABLE blocks
@@ -56,10 +60,11 @@ CREATE TABLE raydium_amm_swap_events
     direction LowCardinality(String) CODEC(LZ4),
     pool_pc_amount UInt64,
     pool_coin_amount UInt64,
-    -- PROJECTION projection_amm (SELECT * ORDER BY amm), -- RECOMMENDED
-    -- PROJECTION projection_user (SELECT * ORDER BY user), -- RECOMMENDED
-    -- PROJECTION projection_mint_in (SELECT * ORDER BY mint_in), -- RECOMMENDED
-    -- PROJECTION projection_mint_out (SELECT * ORDER BY mint_out), -- RECOMMENDED
+    PROJECTION projection_amm (SELECT * ORDER BY amm, slot, transaction_index, instruction_index), -- RECOMMENDED
+    PROJECTION projection_user (SELECT * ORDER BY user, slot, transaction_index, instruction_index), -- RECOMMENDED
+    PROJECTION projection_pair_hash (SELECT * ORDER BY getPairHash(mint_in, mint_out), slot, transaction_index, instruction_index), -- RECOMMENDED
+    -- PROJECTION projection_mint_in (SELECT * ORDER BY mint_in, slot, transaction_index, instruction_index),
+    -- PROJECTION projection_mint_out (SELECT * ORDER BY mint_out, slot, transaction_index, instruction_index),
     parent_instruction_index Int64 DEFAULT -1,
     top_instruction_index Int64 DEFAULT -1,
     parent_instruction_program_id LowCardinality(String) DEFAULT '' CODEC(LZ4),
@@ -85,10 +90,11 @@ CREATE TABLE raydium_amm_initialize_events
     pc_mint LowCardinality(String) CODEC(LZ4),
     coin_mint LowCardinality(String) CODEC(LZ4),
     lp_mint LowCardinality(String) CODEC(LZ4),
-    -- PROJECTION projection_amm (SELECT * ORDER BY amm), -- RECOMMENDED
-    -- PROJECTION projection_user (SELECT * ORDER BY user), -- RECOMMENDED
-    -- PROJECTION projection_pc_mint (SELECT * ORDER BY pc_mint), -- RECOMMENDED
-    -- PROJECTION projection_coin_mint (SELECT * ORDER BY coin_mint), -- RECOMMENDED
+    PROJECTION projection_amm (SELECT * ORDER BY amm, slot, transaction_index, instruction_index), -- RECOMMENDED
+    PROJECTION projection_user (SELECT * ORDER BY user, slot, transaction_index, instruction_index), -- RECOMMENDED
+    PROJECTION projection_pair_hash (SELECT * ORDER BY getPairHash(pc_mint, coin_mint), slot, transaction_index, instruction_index), -- RECOMMENDED
+    -- PROJECTION projection_pc_mint (SELECT * ORDER BY pc_mint),
+    -- PROJECTION projection_coin_mint (SELECT * ORDER BY coin_mint),
     parent_instruction_index Int64 DEFAULT -1,
     top_instruction_index Int64 DEFAULT -1,
     parent_instruction_program_id LowCardinality(String) DEFAULT '' CODEC(LZ4),
@@ -115,10 +121,11 @@ CREATE TABLE raydium_amm_deposit_events
     pc_mint LowCardinality(String) CODEC(LZ4),
     coin_mint LowCardinality(String) CODEC(LZ4),
     lp_mint LowCardinality(String) CODEC(LZ4),
-    -- PROJECTION projection_amm (SELECT * ORDER BY amm), -- RECOMMENDED
-    -- PROJECTION projection_user (SELECT * ORDER BY user), -- RECOMMENDED
-    -- PROJECTION projection_pc_mint (SELECT * ORDER BY pc_mint), -- RECOMMENDED
-    -- PROJECTION projection_coin_mint (SELECT * ORDER BY coin_mint), -- RECOMMENDED
+    PROJECTION projection_amm (SELECT * ORDER BY amm, slot, transaction_index, instruction_index), -- RECOMMENDED
+    PROJECTION projection_user (SELECT * ORDER BY user, slot, transaction_index, instruction_index), -- RECOMMENDED
+    PROJECTION projection_pair_hash (SELECT * ORDER BY getPairHash(pc_mint, coin_mint), slot, transaction_index, instruction_index), -- RECOMMENDED
+    -- PROJECTION projection_pc_mint (SELECT * ORDER BY pc_mint),
+    -- PROJECTION projection_coin_mint (SELECT * ORDER BY coin_mint),
     parent_instruction_index Int64 DEFAULT -1,
     top_instruction_index Int64 DEFAULT -1,
     parent_instruction_program_id LowCardinality(String) DEFAULT '' CODEC(LZ4),
@@ -145,10 +152,11 @@ CREATE TABLE raydium_amm_withdraw_events
     pc_mint LowCardinality(String) CODEC(LZ4),
     coin_mint LowCardinality(String) CODEC(LZ4),
     lp_mint LowCardinality(String) CODEC(LZ4),
-    -- PROJECTION projection_amm (SELECT * ORDER BY amm), -- RECOMMENDED
-    -- PROJECTION projection_user (SELECT * ORDER BY user), -- RECOMMENDED
-    -- PROJECTION projection_pc_mint (SELECT * ORDER BY pc_mint), -- RECOMMENDED
-    -- PROJECTION projection_coin_mint (SELECT * ORDER BY coin_mint), -- RECOMMENDED
+    PROJECTION projection_amm (SELECT * ORDER BY amm, slot, transaction_index, instruction_index), -- RECOMMENDED
+    PROJECTION projection_user (SELECT * ORDER BY user, slot, transaction_index, instruction_index), -- RECOMMENDED
+    PROJECTION projection_pair_hash (SELECT * ORDER BY getPairHash(pc_mint, coin_mint), slot, transaction_index, instruction_index), -- RECOMMENDED
+    -- PROJECTION projection_pc_mint (SELECT * ORDER BY pc_mint),
+    -- PROJECTION projection_coin_mint (SELECT * ORDER BY coin_mint),
     parent_instruction_index Int64 DEFAULT -1,
     top_instruction_index Int64 DEFAULT -1,
     parent_instruction_program_id LowCardinality(String) DEFAULT '' CODEC(LZ4),
@@ -171,10 +179,11 @@ CREATE TABLE raydium_amm_withdraw_pnl_events
     coin_amount UInt64,
     pc_mint LowCardinality(String) CODEC(LZ4),
     coin_mint LowCardinality(String) CODEC(LZ4),
-    -- PROJECTION projection_amm (SELECT * ORDER BY amm), -- RECOMMENDED
-    -- PROJECTION projection_user (SELECT * ORDER BY user), -- RECOMMENDED
-    -- PROJECTION projection_pc_mint (SELECT * ORDER BY pc_mint), -- RECOMMENDED
-    -- PROJECTION projection_coin_mint (SELECT * ORDER BY coin_mint), -- RECOMMENDED
+    PROJECTION projection_amm (SELECT * ORDER BY amm, slot, transaction_index, instruction_index), -- RECOMMENDED
+    PROJECTION projection_user (SELECT * ORDER BY user, slot, transaction_index, instruction_index), -- RECOMMENDED
+    PROJECTION projection_pair_hash (SELECT * ORDER BY getPairHash(pc_mint, coin_mint), slot, transaction_index, instruction_index), -- RECOMMENDED
+    -- PROJECTION projection_pc_mint (SELECT * ORDER BY pc_mint),
+    -- PROJECTION projection_coin_mint (SELECT * ORDER BY coin_mint),
     parent_instruction_index Int64 DEFAULT -1,
     top_instruction_index Int64 DEFAULT -1,
     parent_instruction_program_id LowCardinality(String) DEFAULT '' CODEC(LZ4),
@@ -263,9 +272,9 @@ CREATE TABLE spl_token_transfer_events
     mint LowCardinality(String) CODEC(LZ4),
     amount UInt64,
     authority LowCardinality(String) CODEC(LZ4),
-    -- PROJECTION projection_mint (SELECT * ORDER BY mint), -- RECOMMENDED
-    -- PROJECTION projection_source (SELECT * ORDER BY source_owner), -- RECOMMENDED
-    -- PROJECTION projection_destination (SELECT * ORDER BY destination_owner), -- RECOMMENDED
+    PROJECTION projection_mint (SELECT * ORDER BY mint, slot, transaction_index, instruction_index), -- RECOMMENDED
+    PROJECTION projection_source (SELECT * ORDER BY source_owner, slot, transaction_index, instruction_index), -- RECOMMENDED
+    PROJECTION projection_destination (SELECT * ORDER BY destination_owner, slot, transaction_index, instruction_index), -- RECOMMENDED
     parent_instruction_index Int64 DEFAULT -1,
     top_instruction_index Int64 DEFAULT -1,
     parent_instruction_program_id LowCardinality(String) DEFAULT '' CODEC(LZ4),
@@ -550,8 +559,8 @@ CREATE TABLE system_program_transfer_events
     funding_account LowCardinality(String) CODEC(LZ4),
     recipient_account LowCardinality(String) CODEC(LZ4),
     lamports UInt64,
-    -- PROJECTION projection_funding_account (SELECT * ORDER BY funding_account), -- RECOMMENDED
-    -- PROJECTION projection_recipient_account (SELECT * ORDER BY recipient_account), -- RECOMMENDED
+    PROJECTION projection_funding_account (SELECT * ORDER BY funding_account), -- RECOMMENDED
+    PROJECTION projection_recipient_account (SELECT * ORDER BY recipient_account), -- RECOMMENDED
     parent_instruction_index Int64 DEFAULT -1,
     top_instruction_index Int64 DEFAULT -1,
     parent_instruction_program_id LowCardinality(String) DEFAULT '' CODEC(LZ4),
@@ -896,8 +905,8 @@ CREATE TABLE mpl_token_metadata_create_metadata_account_v3_events
     symbol String,
     uri String,
     seller_fee_basis_points UInt64,
-    -- PROJECTION projection_symbol (SELECT * ORDER BY symbol), -- RECOMMENDED
-    -- PROJECTION projection_mint (SELECT * ORDER BY mint), -- RECOMMENDED
+    PROJECTION projection_symbol (SELECT * ORDER BY symbol), -- RECOMMENDED
+    PROJECTION projection_mint (SELECT * ORDER BY mint), -- RECOMMENDED
     parent_instruction_index Int64 DEFAULT -1,
     top_instruction_index Int64 DEFAULT -1,
     parent_instruction_program_id LowCardinality(String) DEFAULT '' CODEC(LZ4),
