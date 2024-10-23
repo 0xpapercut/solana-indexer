@@ -63,8 +63,8 @@ CREATE TABLE raydium_amm_swap_events
     PROJECTION projection_amm (SELECT * ORDER BY amm, slot, transaction_index, instruction_index), -- RECOMMENDED
     PROJECTION projection_user (SELECT * ORDER BY user, slot, transaction_index, instruction_index), -- RECOMMENDED
     PROJECTION projection_pair_hash (SELECT * ORDER BY getPairHash(mint_in, mint_out), slot, transaction_index, instruction_index), -- RECOMMENDED
-    -- PROJECTION projection_mint_in (SELECT * ORDER BY mint_in, slot, transaction_index, instruction_index),
-    -- PROJECTION projection_mint_out (SELECT * ORDER BY mint_out, slot, transaction_index, instruction_index),
+    PROJECTION projection_mint_in (SELECT * ORDER BY mint_in, slot, transaction_index, instruction_index), -- RECOMMENDED
+    PROJECTION projection_mint_out (SELECT * ORDER BY mint_out, slot, transaction_index, instruction_index), -- RECOMMENDED
     parent_instruction_index Int64 DEFAULT -1,
     top_instruction_index Int64 DEFAULT -1,
     parent_instruction_program_id LowCardinality(String) DEFAULT '' CODEC(LZ4),
