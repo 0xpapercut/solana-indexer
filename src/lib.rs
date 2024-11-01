@@ -266,6 +266,8 @@ fn parse_spl_token_instruction<'a>(
                 .set("mint", &transfer.source.as_ref().unwrap().mint)
                 .set("authority", &transfer.authority)
                 .set("amount", transfer.amount)
+                .set("source_pre_balance", transfer.source.as_ref().unwrap().pre_balance.unwrap_or(0))
+                .set("destination_pre_balance", transfer.source.as_ref().unwrap().pre_balance.unwrap_or(0))
         },
         Some(spl_token_event::Event::Approve(approve)) => {
             tables.create_row("spl_token_approve_events", [("slot", slot.to_string()), ("transaction_index", transaction_index.to_string()), ("instruction_index", instruction.index.to_string())])
@@ -298,6 +300,7 @@ fn parse_spl_token_instruction<'a>(
                 .set("mint", &mint_to.mint)
                 .set("mint_authority", &mint_to.mint_authority)
                 .set("amount", mint_to.amount)
+                .set("destination_pre_balance", mint_to.destination.unwrap().pre_balance.unwrap_or(0))
         },
         Some(spl_token_event::Event::Burn(burn)) => {
             tables.create_row("spl_token_burn_events", [("slot", slot.to_string()), ("transaction_index", transaction_index.to_string()), ("instruction_index", instruction.index.to_string())])
@@ -306,6 +309,7 @@ fn parse_spl_token_instruction<'a>(
                 .set("mint", &burn.source.as_ref().unwrap().mint)
                 .set("amount", burn.amount)
                 .set("authority", &burn.authority)
+                .set("source_pre_balance", burn.source.unwrap().pre_balance.unwrap_or(0))
         },
         Some(spl_token_event::Event::CloseAccount(close_account)) => {
             tables.create_row("spl_token_close_account_events", [("slot", slot.to_string()), ("transaction_index", transaction_index.to_string()), ("instruction_index", instruction.index.to_string())])
@@ -363,6 +367,8 @@ fn parse_raydium_amm_instruction<'a>(
                 .set("direction", &swap.direction)
                 .set("pool_pc_amount", swap.pool_pc_amount.unwrap_or(0))
                 .set("pool_coin_amount", swap.pool_coin_amount.unwrap_or(0))
+                .set("user_pre_balance_in", swap.user_pre_balance_in.unwrap_or(0))
+                .set("user_pre_balance_out", swap.user_pre_balance_out.unwrap_or(0))
         }
         Some(raydium_amm_event::Event::Initialize(initialize)) => {
             tables.create_row("raydium_amm_initialize_events", [("slot", slot.to_string()), ("transaction_index", transaction_index.to_string()), ("instruction_index", instruction.index.to_string())])
@@ -374,6 +380,8 @@ fn parse_raydium_amm_instruction<'a>(
                 .set("pc_mint", &initialize.pc_mint)
                 .set("coin_mint", &initialize.coin_mint)
                 .set("lp_mint", &initialize.lp_mint)
+                .set("user_pc_pre_balance", initialize.user_pc_pre_balance.unwrap_or(0))
+                .set("user_coin_pre_balance", initialize.user_coin_pre_balance.unwrap_or(0))
         },
         Some(raydium_amm_event::Event::Deposit(deposit)) => {
             tables.create_row("raydium_amm_deposit_events", [("slot", slot.to_string()), ("transaction_index", transaction_index.to_string()), ("instruction_index", instruction.index.to_string())])
@@ -387,6 +395,8 @@ fn parse_raydium_amm_instruction<'a>(
                 .set("pc_mint", &deposit.pc_mint)
                 .set("coin_mint", &deposit.coin_mint)
                 .set("lp_mint", &deposit.lp_mint)
+                .set("user_pc_pre_balance", deposit.user_pc_pre_balance.unwrap_or(0))
+                .set("user_coin_pre_balance", deposit.user_coin_pre_balance.unwrap_or(0))
         },
         Some(raydium_amm_event::Event::Withdraw(withdraw)) => {
             tables.create_row("raydium_amm_withdraw_events", [("slot", slot.to_string()), ("transaction_index", transaction_index.to_string()), ("instruction_index", instruction.index.to_string())])
@@ -400,6 +410,8 @@ fn parse_raydium_amm_instruction<'a>(
                 .set("pc_mint", &withdraw.pc_mint)
                 .set("coin_mint", &withdraw.coin_mint)
                 .set("lp_mint", &withdraw.lp_mint)
+                .set("user_pc_pre_balance", withdraw.user_pc_pre_balance.unwrap_or(0))
+                .set("user_coin_pre_balance", withdraw.user_coin_pre_balance.unwrap_or(0))
         },
         Some(raydium_amm_event::Event::WithdrawPnl(withdraw_pnl)) => {
             tables.create_row("raydium_amm_withdraw_pnl_events", [("slot", slot.to_string()), ("transaction_index", transaction_index.to_string()), ("instruction_index", instruction.index.to_string())])
@@ -711,6 +723,14 @@ fn parse_mpl_token_metadata_instruction<'a>(
             tables.create_row("mpl_token_metadata_other_events", [("slot", slot.to_string()), ("transaction_index", transaction_index.to_string()), ("instruction_index", instruction.index.to_string())])
                 .set("type", "verify_collection")
         },
+        Some(mpl_token_metadata_event::Event::Resize(_)) => {
+            tables.create_row("mpl_token_metadata_other_events", [("slot", slot.to_string()), ("transaction_index", transaction_index.to_string()), ("instruction_index", instruction.index.to_string())])
+                .set("type", "resize")
+        },
+        Some(mpl_token_metadata_event::Event::CloseAccounts(_)) => {
+            tables.create_row("mpl_token_metadata_other_events", [("slot", slot.to_string()), ("transaction_index", transaction_index.to_string()), ("instruction_index", instruction.index.to_string())])
+                .set("type", "close_accounts")
+        }
         None => return Ok(None),
     };
     Ok(Some(row))
