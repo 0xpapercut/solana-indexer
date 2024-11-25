@@ -214,7 +214,7 @@ CREATE TABLE spl_token_initialize_mint_events
     decimals UInt64,
     mint_authority LowCardinality(String) CODEC(LZ4),
     freeze_authority LowCardinality(String) CODEC(LZ4),
-    -- PROJECTION projection_mint (SELECT * ORDER BY mint), -- RECOMMENDED
+    PROJECTION projection_mint (SELECT * ORDER BY mint, slot, transaction_index, instruction_index), -- RECOMMENDED
     parent_instruction_index Int64 DEFAULT -1,
     top_instruction_index Int64 DEFAULT -1,
     parent_instruction_program_id LowCardinality(String) DEFAULT '' CODEC(LZ4),
