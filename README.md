@@ -13,7 +13,7 @@ You can checkout [`schema.sql`](schema.sql) to see the data that is indexed.
 If you have any suggestions on other programs that should be supported, feel free to open an issue!
 
 ## Usage
-1. Use the v0.1.3 tag: `git clone https://github.com/0xpapercut/solana-indexer.git --branch v0.1.3`
+1. Use the v0.1.4 tag: `git clone https://github.com/0xpapercut/solana-indexer.git --branch v0.1.4`
 2. [Download `substream-sink-sql` v4.2.0](https://github.com/streamingfast/substreams-sink-sql/releases/tag/v4.2.0).
 3. Setup `DSN` and `STREAMINGFAST_KEY` environment variables.
 4. Run `make setup_db` to setup the necessary tables.
