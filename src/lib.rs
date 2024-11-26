@@ -67,10 +67,11 @@ fn parse_transaction<'a>(
     }
 
     let instructions = get_indexed_instructions(transaction)?;
-    let context = get_context(transaction)?;
+    let mut context = get_context(transaction)?;
 
     let mut tables_changed = false;
     for instruction in instructions.flattened().iter() {
+        context.update_balance(&instruction.instruction.instruction);
         match parse_instruction(instruction, &context, tables, slot, transaction_index).with_context(|| format!("Transaction {}", context.signature))? {
             Some(row) => {
                 row
