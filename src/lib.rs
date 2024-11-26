@@ -155,6 +155,7 @@ fn parse_system_program_instruction<'a>(
                 .set("funding_account", transfer.funding_account)
                 .set("recipient_account", transfer.recipient_account)
                 .set("lamports", transfer.lamports)
+                .set("transfer_type", "unknown")
         },
         Some(system_program_event::Event::CreateAccountWithSeed(create_account_with_seed)) => {
             tables.create_row("system_program_create_account_with_seed_events", [("slot", slot.to_string()), ("transaction_index", transaction_index.to_string()), ("instruction_index", instruction.index.to_string())])
@@ -217,6 +218,7 @@ fn parse_system_program_instruction<'a>(
                 .set("lamports", transfer_with_seed.lamports)
                 .set("from_seed", transfer_with_seed.from_seed)
                 .set("from_owner", transfer_with_seed.from_owner)
+                .set("transfer_type", "unknown")
         },
         Some(system_program_event::Event::UpgradeNonceAccount(upgrade_nonce_account)) => {
             tables.create_row("system_program_upgrade_nonce_account_events", [("slot", slot.to_string()), ("transaction_index", transaction_index.to_string()), ("instruction_index", instruction.index.to_string())])
@@ -269,6 +271,7 @@ fn parse_spl_token_instruction<'a>(
                 .set("amount", transfer.amount)
                 .set("source_pre_balance", transfer.source.as_ref().unwrap().pre_balance.unwrap_or(0))
                 .set("destination_pre_balance", transfer.source.as_ref().unwrap().pre_balance.unwrap_or(0))
+                .set("transfer_type", "unknown")
         },
         Some(spl_token_event::Event::Approve(approve)) => {
             tables.create_row("spl_token_approve_events", [("slot", slot.to_string()), ("transaction_index", transaction_index.to_string()), ("instruction_index", instruction.index.to_string())])
