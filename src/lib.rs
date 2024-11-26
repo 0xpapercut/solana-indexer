@@ -153,7 +153,11 @@ fn parse_system_program_instruction<'a>(
         Some(system_program_event::Event::Transfer(transfer)) => {
             tables.create_row("system_program_transfer_events", [("slot", slot.to_string()), ("transaction_index", transaction_index.to_string()), ("instruction_index", instruction.index.to_string())])
                 .set("funding_account", transfer.funding_account)
+                .set("funding_account_pre_balance", transfer.funding_account_balance.as_ref().map(|x| x.pre_balance).unwrap_or(0))
+                .set("funding_account_post_balance", transfer.funding_account_balance.as_ref().map(|x| x.post_balance).unwrap_or(0))
                 .set("recipient_account", transfer.recipient_account)
+                .set("recipient_account_pre_balance", transfer.recipient_account_balance.as_ref().map(|x| x.pre_balance).unwrap_or(0))
+                .set("recipient_account_post_balance", transfer.recipient_account_balance.as_ref().map(|x| x.post_balance).unwrap_or(0))
                 .set("lamports", transfer.lamports)
                 .set("transfer_type", "unknown")
         },
@@ -213,8 +217,12 @@ fn parse_system_program_instruction<'a>(
         Some(system_program_event::Event::TransferWithSeed(transfer_with_seed)) => {
             tables.create_row("system_program_transfer_with_seed_events", [("slot", slot.to_string()), ("transaction_index", transaction_index.to_string()), ("instruction_index", instruction.index.to_string())])
                 .set("funding_account", transfer_with_seed.funding_account)
+                .set("funding_account_pre_balance", transfer_with_seed.funding_account_balance.as_ref().map(|x| x.pre_balance).unwrap_or(0))
+                .set("funding_account_post_balance", transfer_with_seed.funding_account_balance.as_ref().map(|x| x.post_balance).unwrap_or(0))
                 .set("base_account", transfer_with_seed.base_account)
                 .set("recipient_account", transfer_with_seed.recipient_account)
+                .set("recipient_account_pre_balance", transfer_with_seed.recipient_account_balance.as_ref().map(|x| x.pre_balance).unwrap_or(0))
+                .set("recipient_account_post_balance", transfer_with_seed.recipient_account_balance.as_ref().map(|x| x.post_balance).unwrap_or(0))
                 .set("lamports", transfer_with_seed.lamports)
                 .set("from_seed", transfer_with_seed.from_seed)
                 .set("from_owner", transfer_with_seed.from_owner)
